@@ -1,0 +1,11 @@
+.gitignore
+.htaccess
+.htpasswd
+.htaccess
+default
+default.html
+index
+index.html
+index.xml
+robots
+robots.txt
