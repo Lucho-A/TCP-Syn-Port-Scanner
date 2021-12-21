@@ -130,9 +130,9 @@ int hack_web(in_addr_t ip, int port, int type){
 				curl_easy_setopt(mCurl, CURLOPT_WRITEDATA, (void *)&chunk);
 				curl_easy_setopt(mCurl, CURLOPT_TIMEOUT, 10L);
 				res = curl_easy_perform(mCurl);
-				if(res == CURLE_OK && chunk.response!=NULL){
-					curl_easy_getinfo(mCurl, CURLINFO_RESPONSE_CODE, httpResponseCode);
-					if(httpResponseCode==200 || httpResponseCode==301) printf("\n%s\n", chunk.response);
+				curl_easy_getinfo(mCurl, CURLINFO_RESPONSE_CODE, &httpResponseCode);
+				if(res == CURLE_OK && (httpResponseCode==200 || httpResponseCode==301)){
+					printf("\n%s\n", chunk.response);
 				}
 				if(res != CURLE_OK){
 					printf("%s\n",curl_easy_strerror(res));
