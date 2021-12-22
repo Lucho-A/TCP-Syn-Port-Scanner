@@ -84,14 +84,9 @@ typedef struct message{
 
 struct in_addr dest_ip;
 
-//int hack_port_53(in_addr_t ip, int port,int scanType);
 int system_call(void);
-int interactive_mode(in_addr_t ip, int port);
 int hack_mysql(in_addr_t ip, int port);
 int hack_web(in_addr_t ip, int port, int type);
-int hack_ftp(in_addr_t ip, int port);
-int hack_ssh(in_addr_t ip, int port);
-int hack_telnet(in_addr_t ip, int port);
 int hack_port(in_addr_t ip, int port);
 int port_grabbing(in_addr_t ip, int port,int type);
 void cert_grabbing(in_addr_t ip, int port, char *protocol);

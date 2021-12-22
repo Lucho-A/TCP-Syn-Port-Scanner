@@ -43,9 +43,17 @@ int main(int argc, char *argv[]){
 	}
 	system("clear");
 	printf("%s",C_CYAN);
-	printf("\n*******************************************************\n");
-	printf("\nTCP Syn Port Scanner by L.\n");
-	printf("\nv1.0.5\n");
+	printf("\n*******************************************************\n*");
+	printf("\n* TCP Syn Port Scanner by L.");
+	printf("\n*");
+	printf("\n* v1.0.5");
+	printf("\n*");
+	printf("\n* This is just a minimal/example version. ");
+	printf("\n*");
+	printf("\n* For in-deep version, as well, for others systems/plattforms (Cybersecurity, Oracle, AIX, SAP HANA, among others), pls, contact me!");
+	printf("\n*");
+	printf("\n* Email: luis.alfie@gmail.com");
+	printf("\n*");
 	printf("\n*******************************************************\n");
 	printf("%s",C_DEFAULT);
 	clock_gettime(CLOCK_REALTIME, &tInit);
@@ -234,10 +242,10 @@ int hack_port(in_addr_t ip, int port) {
 		if(strcmp(c,"6\n")==0) hack_web(ip, port, METHODS_ALLOWED_GRABBING);
 		if(strcmp(c,"7\n")==0) hack_web(ip, port, SERVER_RESP_SPOOFED_HEADERS);
 		if(strcmp(c,"8\n")==0) hack_web(ip, port, GET_WEBPAGES);
-		if(strcmp(c,"9\n")==0) hack_ssh(ip, port);
-		if(strcmp(c,"10\n")==0) hack_ftp(ip, port);
+		if(strcmp(c,"9\n")==0) show_error("Not implemented in this (minimal) version.", 0);
+		if(strcmp(c,"10\n")==0) show_error("Not implemented in this (minimal) version.", 0);
 		if(strcmp(c,"11\n")==0) hack_mysql(ip, port);
-		if(strcmp(c,"i\n")==0) interactive_mode(ip, port);
+		if(strcmp(c,"i\n")==0) show_error("Not implemented in this (minimal) version.", 0);
 		if(strcmp(c,"s\n")==0) system_call();
 		if(strcmp(c,"h\n")==0) show_options(port);
 		if(strcmp(c,"c\n")==0) return RETURN_OK;

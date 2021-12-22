@@ -46,10 +46,10 @@ int hack_web(in_addr_t ip, int port, int type){
 	char url[50]="";
 	struct curl_slist *list=NULL;
 	long httpResponseCode=0;
-	char hostHeaders[4][128]={"Host: ???",
+	char hostSpoofedHeaders[4][128]={"Host: ???",
 			"Host: anyhost.com",
 			"Host:"};
-	snprintf(hostHeaders[3],sizeof(hostHeaders[3]),"Host: %s:???",inet_ntoa(*((struct in_addr*)&dest_ip.s_addr)));
+	snprintf(hostSpoofedHeaders[3],sizeof(hostSpoofedHeaders[3]),"Host: %s:???",inet_ntoa(*((struct in_addr*)&dest_ip.s_addr)));
 	struct memory chunk = {0};
 	CURL *mCurl = curl_easy_init();
 	CURLcode res;
@@ -85,10 +85,10 @@ int hack_web(in_addr_t ip, int port, int type){
 		printf("%s", C_BLUE);
 		for(int i=0;i<4;i++){
 			printf("%s", C_WHITE);
-			printf("\nSending \"%s\"\n", hostHeaders[i]);
+			printf("\nSending \"%s\"\n", hostSpoofedHeaders[i]);
 			printf("%s", C_BLUE);
 			snprintf(url,sizeof(url),"%s:%d/",inet_ntoa(*((struct in_addr*)&dest_ip.s_addr)), port);
-			list = curl_slist_append(list, hostHeaders[i]);
+			list = curl_slist_append(list, hostSpoofedHeaders[i]);
 			curl_easy_setopt(mCurl, CURLOPT_HTTPHEADER, list);
 			curl_easy_setopt(mCurl, CURLOPT_WRITEFUNCTION, callback);
 			curl_easy_setopt(mCurl, CURLOPT_WRITEDATA, (void *)&chunk);
@@ -130,9 +130,10 @@ int hack_web(in_addr_t ip, int port, int type){
 				curl_easy_setopt(mCurl, CURLOPT_WRITEDATA, (void *)&chunk);
 				curl_easy_setopt(mCurl, CURLOPT_TIMEOUT, 10L);
 				res = curl_easy_perform(mCurl);
-				curl_easy_getinfo(mCurl, CURLINFO_RESPONSE_CODE, &httpResponseCode);
-				if(res == CURLE_OK && (httpResponseCode==200 || httpResponseCode==301)){
-					printf("\n%s\n", chunk.response);
+				if(res == CURLE_OK){
+					curl_easy_getinfo(mCurl, CURLINFO_RESPONSE_CODE, &httpResponseCode);
+					if(chunk.response!=NULL && (httpResponseCode==200 || httpResponseCode==301))
+						printf("\n%s\n", chunk.response);
 				}
 				if(res != CURLE_OK){
 					printf("%s\n",curl_easy_strerror(res));
