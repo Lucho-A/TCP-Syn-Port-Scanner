@@ -14,11 +14,11 @@ int bannerHeaderFound=FALSE;
 
 static size_t header_callback(char *buffer, size_t size, size_t nitems, void *userdata){
 	if(strstr(buffer,"Server:")!=NULL || strstr(buffer,"SERVER:")!=NULL || strstr(buffer,"server:")!=NULL){
-		printf("%s",C_BLUE);
+		printf("%s",BLUE);
 		printf("\nBanner grabbed by header: ");
-		printf("%s",C_HRED);
+		printf("%s",HRED);
 		printf("%s\n", buffer);
-		printf("%s",C_BLUE);
+		printf("%s",BLUE);
 		bannerHeaderFound=TRUE;
 		return nitems * size;
 	}
@@ -26,7 +26,7 @@ static size_t header_callback(char *buffer, size_t size, size_t nitems, void *us
 }
 
 int port_grabbing(in_addr_t ip, int port, int type){
-	printf("%s",C_BLUE);
+	printf("%s",BLUE);
 	curl_global_init(CURL_GLOBAL_ALL);
 	int res=0;
 	char url[50]="";
@@ -94,10 +94,10 @@ int port_grabbing(in_addr_t ip, int port, int type){
 			}
 			if(bytesReciv>0){
 				printf("Banner grabbed by socket query: ");
-				printf("%s",C_HRED);
+				printf("%s",HRED);
 				for(int i=0; serverResp[i]!='\n';i++) printf("%c",serverResp[i]);
 				printf("\n");
-				printf("%s",C_BLUE);
+				printf("%s",BLUE);
 				break;
 			}
 		}while(TRUE);

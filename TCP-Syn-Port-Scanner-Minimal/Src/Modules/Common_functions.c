@@ -14,9 +14,9 @@ int open_file(char *fileName, FILE **f){
 	char file[256]="";
 	snprintf(file,sizeof(file),"%s%s", PATH_TO_RESOURCES,fileName);
 	if((*f=fopen(file,"r"))==NULL){
-		printf("%s",C_HRED);
+		printf("%s",HRED);
 		printf("fopen(%s) error: Error: %d (%s)\n", fileName, errno, strerror(errno));
-		printf("%s",C_DEFAULT);
+		printf("%s",DEFAULT);
 		return -1;
 	}
 	int entries=0;
@@ -27,7 +27,7 @@ int open_file(char *fileName, FILE **f){
 }
 
 void show_error(char *errMsg, int errnum){
-	printf("%s",C_HRED);
+	printf("%s",HRED);
 	(errnum==0)?(printf("%s\n", errMsg)):(printf("%s Error %d (%s)\n", errMsg, errnum, strerror(errnum)));
-	printf("%s",C_DEFAULT);
+	printf("%s",DEFAULT);
 }

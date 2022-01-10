@@ -19,11 +19,11 @@ struct memory {
 
 static size_t options_callback(char *buffer, size_t size, size_t nitems, void *userdata){
 	if(strstr(buffer,"Allow:")!=NULL || strstr(buffer,"ALLOW:")!=NULL || strstr(buffer,"allow:")!=NULL){
-		printf("%s",C_BLUE);
+		printf("%s",BLUE);
 		printf("Methods allowed found: ");
-		printf("%s",C_HRED);
+		printf("%s",HRED);
 		printf("%s\n", buffer);
-		printf("%s",C_BLUE);
+		printf("%s",BLUE);
 		itHasOptions=TRUE;
 		return nitems * size;
 	}
@@ -55,7 +55,7 @@ int hack_web(in_addr_t ip, int port, int type){
 	CURLcode res;
 	switch(type){
 	case HEADER_GRABBING:
-		printf("%s",C_BLUE);
+		printf("%s",BLUE);
 		snprintf(url,sizeof(url),"%s:%d",inet_ntoa(*((struct in_addr*)&dest_ip.s_addr)),port);
 		if(mCurl) {
 			curl_easy_setopt(mCurl, CURLOPT_URL, url);
@@ -66,7 +66,7 @@ int hack_web(in_addr_t ip, int port, int type){
 		curl_easy_reset(mCurl);
 		break;
 	case METHODS_ALLOWED_GRABBING:
-		printf("%s",C_BLUE);
+		printf("%s",BLUE);
 		char hostHeader[128]="";
 		snprintf(hostHeader, sizeof(hostHeader),"Host: %s",inet_ntoa(*((struct in_addr*)&dest_ip.s_addr)));
 		list = curl_slist_append(list, hostHeader);
@@ -82,11 +82,11 @@ int hack_web(in_addr_t ip, int port, int type){
 		curl_easy_reset(mCurl);
 		break;
 	case SERVER_RESP_SPOOFED_HEADERS:
-		printf("%s", C_BLUE);
+		printf("%s", BLUE);
 		for(int i=0;i<4;i++){
-			printf("%s", C_WHITE);
+			printf("%s", WHITE);
 			printf("\nSending \"%s\"\n", hostSpoofedHeaders[i]);
-			printf("%s", C_BLUE);
+			printf("%s", BLUE);
 			snprintf(url,sizeof(url),"%s:%d/",inet_ntoa(*((struct in_addr*)&dest_ip.s_addr)), port);
 			list = curl_slist_append(list, hostSpoofedHeaders[i]);
 			curl_easy_setopt(mCurl, CURLOPT_HTTPHEADER, list);
@@ -97,7 +97,7 @@ int hack_web(in_addr_t ip, int port, int type){
 			if(res != CURLE_OK) printf("\n%s\n",curl_easy_strerror(res));
 			curl_easy_getinfo(mCurl, CURLINFO_RESPONSE_CODE, &httpResponseCode);
 			printf("\nServer responsed with code: ");
-			if(httpResponseCode==200 || httpResponseCode==301) printf("%s", C_HRED);
+			if(httpResponseCode==200 || httpResponseCode==301) printf("%s", HRED);
 			printf("%ld\n", httpResponseCode);
 			curl_easy_reset(mCurl);
 			curl_slist_free_all(list);
@@ -105,7 +105,7 @@ int hack_web(in_addr_t ip, int port, int type){
 		}
 		break;
 	case GET_WEBPAGES:
-		printf("%s",C_BLUE);
+		printf("%s",BLUE);
 		FILE *f;
 		double totalFiles=0.0, cont=1.0;
 		int i=0;
@@ -148,6 +148,6 @@ int hack_web(in_addr_t ip, int port, int type){
 	}
 	curl_easy_cleanup(mCurl);
 	curl_global_cleanup();
-	printf("%s",C_DEFAULT);
+	printf("%s",DEFAULT);
 	return RETURN_OK;
 }

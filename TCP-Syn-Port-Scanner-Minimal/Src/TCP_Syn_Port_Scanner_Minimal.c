@@ -36,13 +36,13 @@ int main(int argc, char *argv[]){
 		}
 		/* no break */
 	default:
-		printf("%s",C_WHITE);
+		printf("%s",WHITE);
 		printf("\nUsage (as root): 'TCP Syn Port Scanner' ip|url cantPortToScan (1-5000)\n");
 		printf("v.gr: 'TCP Syn Port Scanner' www.scanme.org 500\n\n");
 		exit(EXIT_FAILURE);
 	}
 	system("clear");
-	printf("%s",C_CYAN);
+	printf("%s",CYAN);
 	printf("\n*******************************************************\n*");
 	printf("\n* TCP Syn Port Scanner by L.");
 	printf("\n*");
@@ -55,23 +55,23 @@ int main(int argc, char *argv[]){
 	printf("\n* Email: luis.alfie@gmail.com");
 	printf("\n*");
 	printf("\n*******************************************************\n");
-	printf("%s",C_DEFAULT);
+	printf("%s",DEFAULT);
 	clock_gettime(CLOCK_REALTIME, &tInit);
 	FILE *f=NULL;
 	if((f=fopen(PATH_TO_RESOURCES "Ports.txt","r"))==NULL){
-		printf("%s",C_HRED);
+		printf("%s",HRED);
 		printf("fopen(%s) error: Error: %d (%s)\n", "Ports.txt", errno, strerror(errno));
-		printf("%s",C_DEFAULT);
+		printf("%s",DEFAULT);
 		exit(EXIT_FAILURE);
 	}
 	i=0;
 	while(fscanf(f,"%d,",&portsToScan[i])!=EOF) i++;
 	for(int i=0;i<cantPortToScan;i++) portStatus[portsToScan[i]]=-1;
-	printf("%s",C_WHITE);
+	printf("%s",WHITE);
 	time_t timestamp = time(NULL);
 	struct tm tm = *localtime(&timestamp);
 	printf("\nStarting TCP Syn Port Scanning... (%d/%02d/%02d %02d:%02d:%02d)\n\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
-	printf("%s",C_DEFAULT);
+	printf("%s",DEFAULT);
 	int sk=socket (AF_INET, SOCK_RAW , IPPROTO_TCP);
 	if(sk<0){
 		show_error("socket() error.", errno);
@@ -177,35 +177,35 @@ int main(int argc, char *argv[]){
 		service_resp = getservbyport(ntohs(portsToScan[i]), "tcp");
 		(service_resp==NULL)?(strcpy(service_name,"???")):(strcpy(service_name, service_resp->s_name));
 		if(portStatus[portsToScan[i]]==PORT_OPENED){
-			printf("%s",C_HRED);
+			printf("%s",HRED);
 			printf("Port %d \topened \t\t(%s)\n",portsToScan[i], service_name);
 		}
 		if(portStatus[portsToScan[i]]==PORT_FILTERED){
-			printf("%s",C_HYELLOW);
+			printf("%s",HYELLOW);
 			if(contFilteredPorts<10) printf("Port %d \tfiltered \t(%s)\n",portsToScan[i], service_name);
 		}
 		if(portStatus[portsToScan[i]]==PORT_CLOSED){
-			printf("%s",C_HGREEN);
+			printf("%s",HGREEN);
 			if(contClosedPorts<10) printf("Port %d \tclosed \t\t(%s)\n",portsToScan[i], service_name);
 		}
 	}
 	clock_gettime(CLOCK_REALTIME, &tEnd);
 	double elapsedTime=(tEnd.tv_sec-tInit.tv_sec) + (tEnd.tv_nsec-tInit.tv_nsec) / 1000000000.0;
-	printf("%s",C_DEFAULT);
+	printf("%s",DEFAULT);
 	printf("\nThe identified service names are the IANA standards ones and could differ in practice.\n");
 	printf("\nScanned ports: %d in %.3lf secs\n\n",cantPortToScan, elapsedTime);
-	printf("%s",C_HGREEN);
+	printf("%s",HGREEN);
 	printf("\tClosed: %d\n", contClosedPorts);
-	printf("%s",C_HYELLOW);
+	printf("%s",HYELLOW);
 	printf("\tFiltered: %d\n",contFilteredPorts);
-	printf("%s",C_HRED);
+	printf("%s",HRED);
 	printf("\tOpened: %d\n\n",contOpenedPorts);
-	printf("%s",C_DEFAULT);
+	printf("%s",DEFAULT);
 	char c[128]="n";
 	int selectedPort=0;
 	do{
 		do{
-			printf("%s",C_WHITE);
+			printf("%s",WHITE);
 			selectedPort=0;
 			printf("Insert port to hack (0 = exit, default): ");
 			fgets(c,sizeof(c),stdin);
@@ -223,14 +223,15 @@ int hack_port(in_addr_t ip, int port) {
 	char c[128]="n";
 	show_options(port);
 	while(TRUE){
-		printf("\n%s",C_DEFAULT);
+		printf("\n%s",DEFAULT);
 		do{
 			printf(": ");
 			fgets(c,sizeof(c),stdin);
 		}while(strcmp(c,"1\n")!=0 && strcmp(c,"2\n")!=0 && strcmp(c,"3\n")!=0
 				&& strcmp(c,"4\n")!=0 && strcmp(c,"5\n")!=0 && strcmp(c,"6\n")!=0
 				&& strcmp(c,"7\n")!=0 && strcmp(c,"8\n")!=0 && strcmp(c,"9\n")!=0
-				&& strcmp(c,"10\n")!=0 && strcmp(c,"11\n")!=0 && strcmp(c,"i\n")!=0
+				&& strcmp(c,"10\n")!=0 && strcmp(c,"11\n")!=0 && strcmp(c,"12\n")!=0
+				&& strcmp(c,"i\n")!=0
 				&& strcmp(c,"s\n")!=0 && strcmp(c,"h\n")!=0 && strcmp(c,"c\n")!=0
 				&& strcmp(c,"e\n")!=0);
 		printf("\n");
@@ -245,6 +246,7 @@ int hack_port(in_addr_t ip, int port) {
 		if(strcmp(c,"9\n")==0) show_error("Not implemented in this (minimal) version.", 0);
 		if(strcmp(c,"10\n")==0) show_error("Not implemented in this (minimal) version.", 0);
 		if(strcmp(c,"11\n")==0) hack_mysql(ip, port);
+		if(strcmp(c,"12\n")==0) show_error("Not implemented in this (minimal) version.", 0);
 		if(strcmp(c,"i\n")==0) show_error("Not implemented in this (minimal) version.", 0);
 		if(strcmp(c,"s\n")==0) system_call();
 		if(strcmp(c,"h\n")==0) show_options(port);
@@ -254,8 +256,8 @@ int hack_port(in_addr_t ip, int port) {
 }
 
 void show_options(int port){
-	printf("%s",C_DEFAULT);
-	printf("\nSelect the activity to be performed in port %s%d%s: \n", C_HRED, port, C_DEFAULT);
+	printf("%s",DEFAULT);
+	printf("\nSelect the activity to be performed in port %s%d%s: \n", HRED, port, DEFAULT);
 	printf("\t 1) Banner grabbing by using HTTP headers (http/https)\n");
 	printf("\t 2) Banner grabbing by using socket connection (any service)\n");
 	printf("\t 3) TLS certificate grabbing (https)\n");
@@ -267,6 +269,7 @@ void show_options(int port){
 	printf("\t 9) Trying to perform logins by using brute force (sftp/ssh)\n");
 	printf("\t10) Trying to perform logins by using brute force (ftp)\n");
 	printf("\t11) Trying to perform logins by using brute force (mysql)\n");
+	printf("\t12) Trying to perform Code Red virus attack - Buffer Overflow (any -GET- service)\n");
 	printf("\t i) Interactive mode (any service)\n");
 	printf("\t s) System Call\n");
 	printf("\t h) Show options\n");

