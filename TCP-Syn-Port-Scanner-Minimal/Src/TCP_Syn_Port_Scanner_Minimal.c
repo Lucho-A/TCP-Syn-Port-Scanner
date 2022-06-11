@@ -1,11 +1,11 @@
 /*
- ============================================================================
+ ===============================================================================
  Name        : TCP Syn Port Scanner.c
  Author      : L.
  Version     : 1.0.5
  Copyright   : GNU General Public License v3.0
- Description : TCP Syn Port Scanner developed in C, Ansi-style
- ============================================================================
+ Description : TCP Syn Port Scanner (Minimal version) developed in C, Ansi-style
+ ===============================================================================
  */
 
 #include "Headers/TCP_Syn_Port_Scanner_Minimal.h"
@@ -302,7 +302,7 @@ int start_sniffer(){
 			fflush(stdout);
 			exit(EXIT_FAILURE);
 		}
-		process_packet(buffer, data_size);
+		if(data_size>0) process_packet(buffer, data_size);
 	}
 	close(sock_raw);
 	return RETURN_OK;
