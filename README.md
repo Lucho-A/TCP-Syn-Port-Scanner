@@ -9,3 +9,6 @@ Example: sudo .TCP-Syn-Port-Scanner-Minimal lucho-alfie.ddns.net 10
 
 ![Screenshot_20211218_122356](https://user-images.githubusercontent.com/40904281/146646367-5252baff-bc86-47f0-b700-1aa069a85dca.png)
 
+![image](https://user-images.githubusercontent.com/40904281/148807053-9fcbf4d4-bc59-4f34-a9aa-f43b941c4821.png)
+
+
