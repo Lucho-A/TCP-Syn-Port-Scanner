@@ -1,14 +1,14 @@
 /*
- ===============================================================================
+ ============================================================================
  Name        : TCP Syn Port Scanner.c
  Author      : L.
  Version     : 1.0.5
  Copyright   : GNU General Public License v3.0
- Description : TCP Syn Port Scanner (Minimal version) developed in C, Ansi-style
- ===============================================================================
+ Description : TCP Syn Port Scanner developed in C, Ansi-style
+ ============================================================================
  */
 
-#include "Headers/TCP_Syn_Port_Scanner_Minimal.h"
+#include "TCP_Syn_Port_Scanner_Minimal.h"
 
 char target[500]="";
 int contClosedPorts=0;
@@ -20,11 +20,25 @@ int cantPortToScan=0;
 int endProces=FALSE;
 
 int main(int argc, char *argv[]){
+	system("clear");
+	printf("%s",CYAN);
+	printf("\n************************************************************************************************************************************\n");
+	printf("* %sTCP Syn Port Scanner by L.",HCYAN);
+	printf("\n*");
+	printf("\n*%s v1.0.5",CYAN);
+	printf("\n*");
+	printf("\n* This is just a minimal/example version. ");
+	printf("\n*");
+	printf("\n* For in-deep version, as well, for others systems/plattforms (Cybersecurity, Oracle, AIX, SAP HANA, among others), pls, contact me!");
+	printf("\n*");
+	printf("\n* Email: luis.alfie@gmail.com");
+	printf("\n************************************************************************************************************************************\n");
+	printf("%s",DEFAULT);
 	if(getuid()!=0){
 		show_error("\nYou must be root for running the program.\n",0);
 		exit(EXIT_FAILURE);
 	}
-	int contFilteredPortsChange=-1, endSendPacketes=0, i=0;
+	int contFilteredPortsChange=-1, endSendPackets=0, i=0;
 	struct timespec tInit, tEnd;
 	switch(argc){
 	case 3:
@@ -37,25 +51,10 @@ int main(int argc, char *argv[]){
 		/* no break */
 	default:
 		printf("%s",WHITE);
-		printf("\nUsage (as root): 'TCP Syn Port Scanner' ip|url cantPortToScan (1-5000)\n");
-		printf("v.gr: 'TCP Syn Port Scanner' www.scanme.org 500\n\n");
+		printf("\nUsage (as root): 'TCP-Syn-Port-Scanner' ip|url cantPortToScan (1-5000)\n");
+		printf("v.gr: ./TCP-Syn-Port-Scanner www.scanme.org 500\n\n");
 		exit(EXIT_FAILURE);
 	}
-	system("clear");
-	printf("%s",CYAN);
-	printf("\n*******************************************************\n*");
-	printf("\n* TCP Syn Port Scanner by L.");
-	printf("\n*");
-	printf("\n* v1.0.5");
-	printf("\n*");
-	printf("\n* This is just a minimal/example version. ");
-	printf("\n*");
-	printf("\n* For in-deep version, as well, for others systems/plattforms (Cybersecurity, Oracle, AIX, SAP HANA, among others), pls, contact me!");
-	printf("\n*");
-	printf("\n* Email: luis.alfie@gmail.com");
-	printf("\n*");
-	printf("\n*******************************************************\n");
-	printf("%s",DEFAULT);
 	clock_gettime(CLOCK_REALTIME, &tInit);
 	FILE *f=NULL;
 	if((f=fopen(PATH_TO_RESOURCES "Ports.txt","r"))==NULL){
@@ -98,9 +97,9 @@ int main(int argc, char *argv[]){
 	}
 	int source_port = 43591;
 	char source_ip[20];
-	get_local_ip( source_ip );
-	printf("Local source IP is %s \n\n" , source_ip);
-	memset (datagram, 0, 4096);
+	get_local_ip(source_ip);
+	printf("Local source IP is %s \n\n",source_ip);
+	memset(datagram,0,4096);
 	//IP Header init
 	iph->ihl = 5;
 	iph->version = 4;
@@ -137,34 +136,34 @@ int main(int argc, char *argv[]){
 	}
 	char *threadMsg = "Sniffer Thread";
 	pthread_t sniffer_thread;
-	if( pthread_create( &sniffer_thread , NULL ,  receive_ack , (void*) threadMsg) < 0){
-		show_error("pthread_create() error.", errno);
+	if(pthread_create(&sniffer_thread,NULL,receive_ack,(void*) threadMsg)<0){
+		show_error("pthread_create() error.",errno);
 		exit(EXIT_FAILURE);
 	}
 	dest.sin_family = AF_INET;
 	dest.sin_addr.s_addr = dest_ip.s_addr;
 	for(int i=0;i<cantPortToScan;i++) portStatus[portsToScan[i]]=0;
-	while(endSendPacketes!=PACKET_FORWARDING_LIMIT){
-		for(i= 0;i<cantPortToScan;i++){
+	while(endSendPackets!=PACKET_FORWARDING_LIMIT){
+		for(i=0;i<cantPortToScan;i++){
 			if(portStatus[portsToScan[i]]==0){
 				contFilteredPorts++;
-				tcph->dest = htons (portsToScan[i]);
-				tcph->check = 0;
-				psh.source_address = inet_addr( source_ip );
-				psh.dest_address = dest.sin_addr.s_addr;
-				psh.placeholder = 0;
-				psh.protocol = IPPROTO_TCP;
-				psh.tcp_length = htons( sizeof(struct tcphdr) );
-				memcpy(&psh.tcp , tcph , sizeof (struct tcphdr));
-				tcph->check = csum( (unsigned short*) &psh , sizeof (struct pseudo_header));
-				if (sendto (sk, datagram , sizeof(struct iphdr) + sizeof(struct tcphdr) , 0 , (struct sockaddr *) &dest, sizeof (dest)) < 0){
+				tcph->dest=htons(portsToScan[i]);
+				tcph->check=0;
+				psh.source_address=inet_addr( source_ip );
+				psh.dest_address=dest.sin_addr.s_addr;
+				psh.placeholder=0;
+				psh.protocol=IPPROTO_TCP;
+				psh.tcp_length=htons(sizeof(struct tcphdr));
+				memcpy(&psh.tcp,tcph,sizeof(struct tcphdr));
+				tcph->check=csum((unsigned short*) &psh,sizeof(struct pseudo_header));
+				if(sendto(sk,datagram,sizeof(struct iphdr)+sizeof(struct tcphdr),0,(struct sockaddr *) &dest,sizeof (dest))<0){
 					show_error("Error sending syn packet.", errno);
 					exit(EXIT_FAILURE);
 				}
 			}
 		}
 		sleep(1);
-		(contFilteredPortsChange==contFilteredPorts)?(endSendPacketes++):(endSendPacketes=0);
+		(contFilteredPortsChange==contFilteredPorts)?(endSendPackets++):(endSendPackets=0);
 		contFilteredPortsChange=contFilteredPorts;
 		contFilteredPorts=0;
 	}
@@ -227,26 +226,26 @@ int hack_port(in_addr_t ip, int port) {
 		do{
 			printf(": ");
 			fgets(c,sizeof(c),stdin);
-		}while(strcmp(c,"1\n")!=0 && strcmp(c,"2\n")!=0 && strcmp(c,"3\n")!=0
-				&& strcmp(c,"4\n")!=0 && strcmp(c,"5\n")!=0 && strcmp(c,"6\n")!=0
-				&& strcmp(c,"7\n")!=0 && strcmp(c,"8\n")!=0 && strcmp(c,"9\n")!=0
-				&& strcmp(c,"10\n")!=0 && strcmp(c,"11\n")!=0 && strcmp(c,"12\n")!=0
+		}while(strcmp(c,"1.1\n")!=0 && strcmp(c,"1.2\n")!=0 && strcmp(c,"1.3\n")!=0
+				&& strcmp(c,"1.4\n")!=0 && strcmp(c,"1.5\n")!=0 && strcmp(c,"2.1\n")!=0
+				&& strcmp(c,"2.2\n")!=0 && strcmp(c,"2.3\n")!=0 && strcmp(c,"3.1\n")!=0
+				&& strcmp(c,"3.2\n")!=0 && strcmp(c,"3.3\n")!=0 && strcmp(c,"4.1\n")!=0
 				&& strcmp(c,"i\n")!=0
 				&& strcmp(c,"s\n")!=0 && strcmp(c,"h\n")!=0 && strcmp(c,"c\n")!=0
 				&& strcmp(c,"e\n")!=0);
 		printf("\n");
-		if(strcmp(c,"1\n")==0) port_grabbing(ip, port, HEADER_GRABBING);
-		if(strcmp(c,"2\n")==0) port_grabbing(ip, port, SOCKET_GRABBING);
-		if(strcmp(c,"3\n")==0) cert_grabbing(ip, port, "https");
-		if(strcmp(c,"4\n")==0) cert_grabbing(ip, port, "sftp");
-		if(strcmp(c,"5\n")==0) hack_web(ip, port, HEADER_GRABBING);
-		if(strcmp(c,"6\n")==0) hack_web(ip, port, METHODS_ALLOWED_GRABBING);
-		if(strcmp(c,"7\n")==0) hack_web(ip, port, SERVER_RESP_SPOOFED_HEADERS);
-		if(strcmp(c,"8\n")==0) hack_web(ip, port, GET_WEBPAGES);
-		if(strcmp(c,"9\n")==0) show_error("Not implemented in this (minimal) version.", 0);
-		if(strcmp(c,"10\n")==0) show_error("Not implemented in this (minimal) version.", 0);
-		if(strcmp(c,"11\n")==0) hack_mysql(ip, port);
-		if(strcmp(c,"12\n")==0) show_error("Not implemented in this (minimal) version.", 0);
+		if(strcmp(c,"1.1\n")==0) port_grabbing(ip, port, HEADER_GRABBING);
+		if(strcmp(c,"1.2\n")==0) port_grabbing(ip, port, SOCKET_GRABBING);
+		if(strcmp(c,"1.3\n")==0) cert_grabbing(ip, port, "https");
+		if(strcmp(c,"1.4\n")==0) cert_grabbing(ip, port, "sftp");
+		if(strcmp(c,"1.5\n")==0) hack_web(ip, port, HEADER_GRABBING);
+		if(strcmp(c,"2.1\n")==0) hack_web(ip, port, METHODS_ALLOWED_GRABBING);
+		if(strcmp(c,"2.2\n")==0) hack_web(ip, port, SERVER_RESP_SPOOFED_HEADERS);
+		if(strcmp(c,"2.3\n")==0) hack_web(ip, port, GET_WEBPAGES);
+		if(strcmp(c,"3.1\n")==0) show_error("Not implemented in this (minimal) version.", 0);
+		if(strcmp(c,"3.2\n")==0) show_error("Not implemented in this (minimal) version.", 0);
+		if(strcmp(c,"3.3\n")==0) hack_mysql(ip, port,MYSQL_BRUTE_FORCE);
+		if(strcmp(c,"4.1\n")==0) show_error("Not implemented in this (minimal) version.", 0);
 		if(strcmp(c,"i\n")==0) show_error("Not implemented in this (minimal) version.", 0);
 		if(strcmp(c,"s\n")==0) system_call();
 		if(strcmp(c,"h\n")==0) show_options(port);
@@ -257,19 +256,25 @@ int hack_port(in_addr_t ip, int port) {
 
 void show_options(int port){
 	printf("%s",DEFAULT);
-	printf("\nSelect the activity to be performed in port %s%d%s: \n", HRED, port, DEFAULT);
-	printf("\t 1) Banner grabbing by using HTTP headers (http/https)\n");
-	printf("\t 2) Banner grabbing by using socket connection (any service)\n");
-	printf("\t 3) TLS certificate grabbing (https)\n");
-	printf("\t 4) TLS certificate grabbing (sftp/ssh)\n");
-	printf("\t 5) Headers grabbing (http/https)\n");
-	printf("\t 6) Evaluate HTTP methods allowed by server (http/https)\n");
-	printf("\t 7) Evaluate server code responses with spoofed host headers (http/https)\n");
-	printf("\t 8) Trying to get webpages and interesting files (http/https)\n");
-	printf("\t 9) Trying to perform logins by using brute force (sftp/ssh)\n");
-	printf("\t10) Trying to perform logins by using brute force (ftp)\n");
-	printf("\t11) Trying to perform logins by using brute force (mysql)\n");
-	printf("\t12) Trying to perform Code Red virus attack - Buffer Overflow (any -GET- service)\n");
+	printf("\nSelect the activity to be performed in port %s%d%s: \n\n", HRED, port, DEFAULT);
+	printf("\t 1) Banner grabbing:\n");
+	printf("\t 1.1) Banner grabbing by using HTTP headers (http/https)\n");
+	printf("\t 1.2) Banner grabbing by using socket connection (any service)\n");
+	printf("\t 1.3) MySQL Banner grabbing by using socket connection\n");
+	printf("\t 1.4) TLS certificate grabbing (https)\n");
+	printf("\t 1.5) TLS certificate grabbing (sftp/ssh)\n");
+	printf("\t 1.6) Headers grabbing (http/https)\n\n");
+	printf("\t 2) HTTP:\n");
+	printf("\t 2.1) Evaluate HTTP methods allowed by server (http/https)\n");
+	printf("\t 2.2) Evaluate server code responses with spoofed host headers (http/https)\n");
+	printf("\t 2.3) Trying to get webpages and interesting files (http/https)\n\n");
+	printf("\t 3) Brute Force:\n");
+	printf("\t 3.1) Trying to perform logins by using brute force (sftp/ssh)\n");
+	printf("\t 3.2) Trying to perform logins by using brute force (ftp)\n");
+	printf("\t 3.3) Trying to perform logins by using brute force (mysql)\n\n");
+	printf("\t 4) Buffer Overflow:\n");
+	printf("\t 4.1) Trying to perform Code Red virus attack - Buffer Overflow (any -GET- service)\n\n");
+	printf("\t 5) Others:\n");
 	printf("\t i) Interactive mode (any service)\n");
 	printf("\t s) System Call\n");
 	printf("\t h) Show options\n");
@@ -279,7 +284,7 @@ void show_options(int port){
 
 void * receive_ack( void *ptr ){
 	start_sniffer();
-	return RETURN_OK;
+	return (void*)&RETURN_SNIFFER_OK;
 }
 
 int start_sniffer(){
@@ -296,35 +301,35 @@ int start_sniffer(){
 	}
 	saddr_size = sizeof saddr;
 	while(endProces==FALSE){
-		data_size = recvfrom(sock_raw , buffer , 65536 , 0 , &saddr , &saddr_size);
-		if(data_size <0 ){
+		data_size=recvfrom(sock_raw,buffer,65536,0,&saddr,&saddr_size);
+		if(data_size<0){
 			show_error("recvfrom() error.", errno);
 			fflush(stdout);
 			exit(EXIT_FAILURE);
 		}
-		if(data_size>0) process_packet(buffer, data_size);
+		if(data_size>0)	process_packet(buffer, data_size);
 	}
 	close(sock_raw);
 	return RETURN_OK;
 }
 
 void process_packet(unsigned char* buffer, int size){
-	struct iphdr *iph = (struct iphdr*)buffer;
+	struct iphdr *iph=(struct iphdr*)buffer;
 	struct sockaddr_in source,dest;
 	unsigned short iphdrlen;
-	if(iph->protocol == 6){
-		struct iphdr *iph = (struct iphdr *)buffer;
-		iphdrlen = iph->ihl*4;
+	if(iph->protocol==6){
+		struct iphdr *iph=(struct iphdr *)buffer;
+		iphdrlen=iph->ihl*4;
 		struct tcphdr *tcph=(struct tcphdr*)(buffer + iphdrlen);
-		memset(&source, 0, sizeof(source));
-		source.sin_addr.s_addr = iph->saddr;
-		memset(&dest, 0, sizeof(dest));
-		dest.sin_addr.s_addr = iph->daddr;
-		if(tcph->syn == 1 && tcph->ack == 1 && source.sin_addr.s_addr == dest_ip.s_addr && portStatus[ntohs(tcph->source)]==0){
+		memset(&source,0,sizeof(source));
+		source.sin_addr.s_addr=iph->saddr;
+		memset(&dest,0,sizeof(dest));
+		dest.sin_addr.s_addr=iph->daddr;
+		if(tcph->syn==1 && tcph->ack==1 && source.sin_addr.s_addr==dest_ip.s_addr && portStatus[ntohs(tcph->source)]==0){
 			portStatus[ntohs(tcph->source)]=PORT_OPENED;
 			contOpenedPorts++;
 		}
-		if(tcph->rst == 1 && source.sin_addr.s_addr == dest_ip.s_addr && portStatus[ntohs(tcph->source)]==0){
+		if(tcph->rst==1 && source.sin_addr.s_addr==dest_ip.s_addr && portStatus[ntohs(tcph->source)]==0){
 			portStatus[ntohs(tcph->source)]=PORT_CLOSED;
 			contClosedPorts++;
 		}
@@ -336,17 +341,17 @@ unsigned short csum(unsigned short *ptr,int nbytes){
 	unsigned short oddbyte;
 	register short r;
 	sum=0;
-	while(nbytes>1) {
+	while(nbytes>1){
 		sum+=*ptr++;
 		nbytes-=2;
 	}
-	if(nbytes==1) {
+	if(nbytes==1){
 		oddbyte=0;
 		*((u_char*)&oddbyte)=*(u_char*)ptr;
 		sum+=oddbyte;
 	}
-	sum = (sum>>16)+(sum & 0xffff);
-	sum = sum + (sum>>16);
+	sum=(sum>>16)+(sum & 0xffff);
+	sum=sum+(sum>>16);
 	r=(short)~sum;
 	return(r);
 }
@@ -355,20 +360,20 @@ char* hostname_to_ip(char * hostname){
 	struct hostent *he;
 	struct in_addr **addr_list;
 	int i;
-	if((he = gethostbyname( hostname ) ) == NULL) return NULL;
-	addr_list = (struct in_addr **) he->h_addr_list;
-	for(i = 0; addr_list[i] != NULL; i++) return inet_ntoa(*addr_list[i]);
+	if((he=gethostbyname(hostname))==NULL) return NULL;
+	addr_list=(struct in_addr **) he->h_addr_list;
+	for(i=0;addr_list[i]!=NULL;i++) return inet_ntoa(*addr_list[i]);
 	return NULL;
 }
 
 void get_local_ip (char * buffer){
-	int sk = socket (AF_INET, SOCK_DGRAM, 0);
-	const char* kGoogleDnsIp = "8.8.8.8";
-	int dns_port = 53;
+	int sk=socket (AF_INET, SOCK_DGRAM, 0);
+	const char* kGoogleDnsIp="8.8.8.8";
+	int dns_port=53;
 	struct sockaddr_in serv;
-	memset(&serv, 0, sizeof(serv));
+	memset(&serv,0,sizeof(serv));
 	serv.sin_family=AF_INET;
-	serv.sin_addr.s_addr = inet_addr(kGoogleDnsIp);
+	serv.sin_addr.s_addr=inet_addr(kGoogleDnsIp);
 	serv.sin_port=htons(dns_port);
 	int resp=connect(sk,(const struct sockaddr*) &serv,sizeof(serv));
 	if(resp!=0){
@@ -376,15 +381,15 @@ void get_local_ip (char * buffer){
 		exit(EXIT_FAILURE);
 	}
 	struct sockaddr_in name;
-	socklen_t namelen = sizeof(name);
-	resp = getsockname(sk, (struct sockaddr*) &name, &namelen);
+	socklen_t namelen=sizeof(name);
+	resp=getsockname(sk,(struct sockaddr*) &name, &namelen);
 	if(resp!=0){
-		show_error("getsockname() error.", errno);
+		show_error("getsockname() error.",errno);
 		exit(EXIT_FAILURE);
 	}
 	const char *p = inet_ntop(AF_INET, &name.sin_addr, buffer, 100);
 	if(p==NULL){
-		show_error("inet_ntop() error.", errno);
+		show_error("inet_ntop() error.",errno);
 		exit(EXIT_FAILURE);
 	}
 	close(sk);
