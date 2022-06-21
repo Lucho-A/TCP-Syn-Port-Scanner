@@ -82,23 +82,23 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in  dest;
 	struct pseudo_header psh;
 	if(inet_addr(target) != -1){
-		printf("It's not nesessary resolve the hostname (%s)\n",target);
+		printf("It's not nesessary resolve the hostname (%s%s)\n",HWHITE,target);
 		dest_ip.s_addr = inet_addr(target);
 	}else{
 		char *ip = hostname_to_ip(target);
 		if(ip!=NULL){
-			printf("URL (%s) resolved to: %s \n\n" , target , ip);
+			printf("URL (%s) resolved to: %s%s \n\n" , target ,HWHITE, ip);
 			dest_ip.s_addr = inet_addr( hostname_to_ip(target) );
 		}
 		else{
-			printf("Unable to resolve hostname : %s\n\n" , target);
+			printf("Unable to resolve hostname : %s%s\n\n",HWHITE, target);
 			exit(EXIT_FAILURE);
 		}
 	}
 	int source_port = 43591;
 	char source_ip[20];
 	get_local_ip(source_ip);
-	printf("Local source IP is %s \n\n",source_ip);
+	printf("%sLocal source IP is %s%s \n\n",DEFAULT, HWHITE,source_ip);
 	memset(datagram,0,4096);
 	//IP Header init
 	iph->ihl = 5;
@@ -204,7 +204,7 @@ int main(int argc, char *argv[]){
 	int selectedPort=0;
 	do{
 		do{
-			printf("%s",WHITE);
+			printf("%s",DEFAULT);
 			selectedPort=0;
 			printf("Insert port to hack (0 = exit, default): ");
 			fgets(c,sizeof(c),stdin);
@@ -230,24 +230,26 @@ int hack_port(in_addr_t ip, int port) {
 				&& strcmp(c,"1.4\n")!=0 && strcmp(c,"1.5\n")!=0 && strcmp(c,"2.1\n")!=0
 				&& strcmp(c,"2.2\n")!=0 && strcmp(c,"2.3\n")!=0 && strcmp(c,"3.1\n")!=0
 				&& strcmp(c,"3.2\n")!=0 && strcmp(c,"3.3\n")!=0 && strcmp(c,"4.1\n")!=0
+				&& strcmp(c,"5.1\n")!=0
 				&& strcmp(c,"i\n")!=0
 				&& strcmp(c,"s\n")!=0 && strcmp(c,"h\n")!=0 && strcmp(c,"c\n")!=0
 				&& strcmp(c,"e\n")!=0);
 		printf("\n");
-		if(strcmp(c,"1.1\n")==0) port_grabbing(ip, port, HEADER_GRABBING);
-		if(strcmp(c,"1.2\n")==0) port_grabbing(ip, port, SOCKET_GRABBING);
-		if(strcmp(c,"1.3\n")==0) cert_grabbing(ip, port, "https");
-		if(strcmp(c,"1.4\n")==0) cert_grabbing(ip, port, "sftp");
-		if(strcmp(c,"1.5\n")==0) hack_web(ip, port, HEADER_GRABBING);
-		if(strcmp(c,"2.1\n")==0) hack_web(ip, port, METHODS_ALLOWED_GRABBING);
-		if(strcmp(c,"2.2\n")==0) hack_web(ip, port, SERVER_RESP_SPOOFED_HEADERS);
-		if(strcmp(c,"2.3\n")==0) hack_web(ip, port, GET_WEBPAGES);
-		if(strcmp(c,"3.1\n")==0) show_error("Not implemented in this (minimal) version.", 0);
-		if(strcmp(c,"3.2\n")==0) show_error("Not implemented in this (minimal) version.", 0);
-		if(strcmp(c,"3.3\n")==0) hack_mysql(ip, port,MYSQL_BRUTE_FORCE);
-		if(strcmp(c,"4.1\n")==0) show_error("Not implemented in this (minimal) version.", 0);
-		if(strcmp(c,"i\n")==0) show_error("Not implemented in this (minimal) version.", 0);
-		if(strcmp(c,"s\n")==0) system_call();
+		if(strcmp(c,"1.1\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"1.2\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"1.3\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"1.4\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"1.5\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"2.1\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"2.2\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"2.3\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"3.1\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"3.2\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"3.3\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"4.1\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"5.1\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"i\n")==0) printf("Feature not implemented in this version\n");
+		if(strcmp(c,"s\n")==0) printf("Feature not implemented in this version\n");
 		if(strcmp(c,"h\n")==0) show_options(port);
 		if(strcmp(c,"c\n")==0) return RETURN_OK;
 		if(strcmp(c,"e\n")==0) exit(0);
@@ -257,13 +259,13 @@ int hack_port(in_addr_t ip, int port) {
 void show_options(int port){
 	printf("%s",DEFAULT);
 	printf("\nSelect the activity to be performed in port %s%d%s: \n\n", HRED, port, DEFAULT);
+	printf("%s",DEFAULT);
 	printf("\t 1) Banner grabbing:\n");
 	printf("\t 1.1) Banner grabbing by using HTTP headers (http/https)\n");
 	printf("\t 1.2) Banner grabbing by using socket connection (any service)\n");
-	printf("\t 1.3) MySQL Banner grabbing by using socket connection\n");
-	printf("\t 1.4) TLS certificate grabbing (https)\n");
-	printf("\t 1.5) TLS certificate grabbing (sftp/ssh)\n");
-	printf("\t 1.6) Headers grabbing (http/https)\n\n");
+	printf("\t 1.3) TLS certificate grabbing (https)\n");
+	printf("\t 1.4) TLS certificate grabbing (sftp/ssh)\n");
+	printf("\t 1.5) Headers grabbing (http/https)\n\n");
 	printf("\t 2) HTTP:\n");
 	printf("\t 2.1) Evaluate HTTP methods allowed by server (http/https)\n");
 	printf("\t 2.2) Evaluate server code responses with spoofed host headers (http/https)\n");
@@ -274,7 +276,9 @@ void show_options(int port){
 	printf("\t 3.3) Trying to perform logins by using brute force (mysql)\n\n");
 	printf("\t 4) Buffer Overflow:\n");
 	printf("\t 4.1) Trying to perform Code Red virus attack - Buffer Overflow (any -GET- service)\n\n");
-	printf("\t 5) Others:\n");
+	printf("\t 5) DOS Attacks:\n");
+	printf("\t 5.1) DOS Syn Flood Attack (any service)\n\n");
+	printf("\t Others:\n");
 	printf("\t i) Interactive mode (any service)\n");
 	printf("\t s) System Call\n");
 	printf("\t h) Show options\n");
@@ -284,7 +288,7 @@ void show_options(int port){
 
 void * receive_ack( void *ptr ){
 	start_sniffer();
-	return (void*)&RETURN_SNIFFER_OK;
+	return (void*)&RETURN_THREAD_OK;
 }
 
 int start_sniffer(){
@@ -336,26 +340,6 @@ void process_packet(unsigned char* buffer, int size){
 	}
 }
 
-unsigned short csum(unsigned short *ptr,int nbytes){
-	register long sum;
-	unsigned short oddbyte;
-	register short r;
-	sum=0;
-	while(nbytes>1){
-		sum+=*ptr++;
-		nbytes-=2;
-	}
-	if(nbytes==1){
-		oddbyte=0;
-		*((u_char*)&oddbyte)=*(u_char*)ptr;
-		sum+=oddbyte;
-	}
-	sum=(sum>>16)+(sum & 0xffff);
-	sum=sum+(sum>>16);
-	r=(short)~sum;
-	return(r);
-}
-
 char* hostname_to_ip(char * hostname){
 	struct hostent *he;
 	struct in_addr **addr_list;
@@ -394,3 +378,65 @@ void get_local_ip (char * buffer){
 	}
 	close(sk);
 }
+
+unsigned short csum(unsigned short *ptr,int nbytes){
+	register long sum;
+	unsigned short oddbyte;
+	register short r;
+	sum=0;
+	while(nbytes>1){
+		sum+=*ptr++;
+		nbytes-=2;
+	}
+	if(nbytes==1){
+		oddbyte=0;
+		*((u_char*)&oddbyte)=*(u_char*)ptr;
+		sum+=oddbyte;
+	}
+	sum=(sum>>16)+(sum & 0xffff);
+	sum=sum+(sum>>16);
+	r=(short)~sum;
+	return(r);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

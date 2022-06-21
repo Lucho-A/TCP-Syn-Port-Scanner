@@ -4,28 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Src/Modules/Common_functions.c \
-../Src/Modules/Grabbing_cert.c \
-../Src/Modules/Grabbing_port.c \
-../Src/Modules/Hack_mysql.c \
-../Src/Modules/Hack_web.c \
-../Src/Modules/System_call.c 
+../Src/Modules/Common_functions.c 
 
 C_DEPS += \
-./Src/Modules/Common_functions.d \
-./Src/Modules/Grabbing_cert.d \
-./Src/Modules/Grabbing_port.d \
-./Src/Modules/Hack_mysql.d \
-./Src/Modules/Hack_web.d \
-./Src/Modules/System_call.d 
+./Src/Modules/Common_functions.d 
 
 OBJS += \
-./Src/Modules/Common_functions.o \
-./Src/Modules/Grabbing_cert.o \
-./Src/Modules/Grabbing_port.o \
-./Src/Modules/Hack_mysql.o \
-./Src/Modules/Hack_web.o \
-./Src/Modules/System_call.o 
+./Src/Modules/Common_functions.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -40,7 +25,7 @@ Src/Modules/%.o: ../Src/Modules/%.c Src/Modules/subdir.mk
 clean: clean-Src-2f-Modules
 
 clean-Src-2f-Modules:
-	-$(RM) ./Src/Modules/Common_functions.d ./Src/Modules/Common_functions.o ./Src/Modules/Grabbing_cert.d ./Src/Modules/Grabbing_cert.o ./Src/Modules/Grabbing_port.d ./Src/Modules/Grabbing_port.o ./Src/Modules/Hack_mysql.d ./Src/Modules/Hack_mysql.o ./Src/Modules/Hack_web.d ./Src/Modules/Hack_web.o ./Src/Modules/System_call.d ./Src/Modules/System_call.o
+	-$(RM) ./Src/Modules/Common_functions.d ./Src/Modules/Common_functions.o
 
 .PHONY: clean-Src-2f-Modules
 
