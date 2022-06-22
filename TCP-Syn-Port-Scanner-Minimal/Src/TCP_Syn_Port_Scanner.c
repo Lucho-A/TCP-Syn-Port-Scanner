@@ -8,7 +8,7 @@
  ============================================================================
  */
 
-#include "TCP_Syn_Port_Scanner_Minimal.h"
+#include <TCP_Syn_Port_Scanner.h>
 
 char target[500]="";
 int contClosedPorts=0;
@@ -22,17 +22,15 @@ int endProces=FALSE;
 int main(int argc, char *argv[]){
 	system("clear");
 	printf("%s",CYAN);
-	printf("\n************************************************************************************************************************************\n");
+	printf("\n***********************************************************************************************************************************************************************\n");
 	printf("* %sTCP Syn Port Scanner by L.",HCYAN);
 	printf("\n*");
 	printf("\n*%s v1.0.5",CYAN);
 	printf("\n*");
-	printf("\n* This is just a minimal/example version. ");
-	printf("\n*");
-	printf("\n* For in-deep version, as well, for others systems/plattforms (Cybersecurity, Oracle, AIX, SAP HANA, among others), pls, contact me!");
+	printf("\n* For a complete cyber & security framework, as well, for others systems/plattforms assessments (Cybersecurity, Oracle, AIX, SAP HANA, among others), pls, contact me!");
 	printf("\n*");
 	printf("\n* Email: luis.alfie@gmail.com");
-	printf("\n************************************************************************************************************************************\n");
+	printf("\n***********************************************************************************************************************************************************************");
 	printf("%s",DEFAULT);
 	if(getuid()!=0){
 		show_error("\nYou must be root for running the program.\n",0);
@@ -69,7 +67,7 @@ int main(int argc, char *argv[]){
 	printf("%s",WHITE);
 	time_t timestamp = time(NULL);
 	struct tm tm = *localtime(&timestamp);
-	printf("\nStarting TCP Syn Port Scanning... (%d/%02d/%02d %02d:%02d:%02d)\n\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+	printf("\n\nStarting TCP Syn Port Scanning... (%d/%02d/%02d %02d:%02d:%02d)\n\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
 	printf("%s",DEFAULT);
 	int sk=socket (AF_INET, SOCK_RAW , IPPROTO_TCP);
 	if(sk<0){
@@ -95,7 +93,7 @@ int main(int argc, char *argv[]){
 			exit(EXIT_FAILURE);
 		}
 	}
-	int source_port = 43591;
+	int source_port = 65432;
 	char source_ip[20];
 	get_local_ip(source_ip);
 	printf("%sLocal source IP is %s%s \n\n",DEFAULT, HWHITE,source_ip);
@@ -110,13 +108,13 @@ int main(int argc, char *argv[]){
 	iph->ttl = 64;
 	iph->protocol = IPPROTO_TCP;
 	iph->check = 0;
-	iph->saddr = inet_addr (source_ip);
+	iph->saddr = inet_addr(source_ip);
 	iph->daddr = dest_ip.s_addr;
 	iph->check = csum ((unsigned short *) datagram, iph->tot_len >> 1);
 	//TCP Header init
-	tcph->source = htons ( source_port );
-	tcph->dest = htons (80);
-	tcph->seq = htonl(1105024978);
+	tcph->source = htons(source_port);
+	tcph->dest = htons(80);
+	tcph->seq = htonl(1111111111);
 	tcph->ack_seq = 0;
 	tcph->doff = sizeof(struct tcphdr)/4;
 	tcph->fin=0;
@@ -125,7 +123,7 @@ int main(int argc, char *argv[]){
 	tcph->psh=0;
 	tcph->ack=0;
 	tcph->urg=0;
-	tcph->window = htons (14600);
+	tcph->window = htons(65535);
 	tcph->check = 0;
 	tcph->urg_ptr = 0;
 	int one = 1;
@@ -200,90 +198,6 @@ int main(int argc, char *argv[]){
 	printf("%s",HRED);
 	printf("\tOpened: %d\n\n",contOpenedPorts);
 	printf("%s",DEFAULT);
-	char c[128]="n";
-	int selectedPort=0;
-	do{
-		do{
-			printf("%s",DEFAULT);
-			selectedPort=0;
-			printf("Insert port to hack (0 = exit, default): ");
-			fgets(c,sizeof(c),stdin);
-			if(strcmp(c,"0\n")==0 || strcmp(c,"\n")==0){
-				printf("\n\n");
-				exit(0);
-			}
-			(portStatus[strtol(c,NULL,10)]==PORT_OPENED)?(selectedPort=strtol(c,NULL,10)):(show_error("\nInsert an opened port\n", 0));
-		}while(selectedPort==0);
-		hack_port(dest_ip.s_addr,selectedPort);
-	}while(TRUE);
-}
-
-int hack_port(in_addr_t ip, int port) {
-	char c[128]="n";
-	show_options(port);
-	while(TRUE){
-		printf("\n%s",DEFAULT);
-		do{
-			printf(": ");
-			fgets(c,sizeof(c),stdin);
-		}while(strcmp(c,"1.1\n")!=0 && strcmp(c,"1.2\n")!=0 && strcmp(c,"1.3\n")!=0
-				&& strcmp(c,"1.4\n")!=0 && strcmp(c,"1.5\n")!=0 && strcmp(c,"2.1\n")!=0
-				&& strcmp(c,"2.2\n")!=0 && strcmp(c,"2.3\n")!=0 && strcmp(c,"3.1\n")!=0
-				&& strcmp(c,"3.2\n")!=0 && strcmp(c,"3.3\n")!=0 && strcmp(c,"4.1\n")!=0
-				&& strcmp(c,"5.1\n")!=0
-				&& strcmp(c,"i\n")!=0
-				&& strcmp(c,"s\n")!=0 && strcmp(c,"h\n")!=0 && strcmp(c,"c\n")!=0
-				&& strcmp(c,"e\n")!=0);
-		printf("\n");
-		if(strcmp(c,"1.1\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"1.2\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"1.3\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"1.4\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"1.5\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"2.1\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"2.2\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"2.3\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"3.1\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"3.2\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"3.3\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"4.1\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"5.1\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"i\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"s\n")==0) printf("Feature not implemented in this version\n");
-		if(strcmp(c,"h\n")==0) show_options(port);
-		if(strcmp(c,"c\n")==0) return RETURN_OK;
-		if(strcmp(c,"e\n")==0) exit(0);
-	}
-}
-
-void show_options(int port){
-	printf("%s",DEFAULT);
-	printf("\nSelect the activity to be performed in port %s%d%s: \n\n", HRED, port, DEFAULT);
-	printf("%s",DEFAULT);
-	printf("\t 1) Banner grabbing:\n");
-	printf("\t 1.1) Banner grabbing by using HTTP headers (http/https)\n");
-	printf("\t 1.2) Banner grabbing by using socket connection (any service)\n");
-	printf("\t 1.3) TLS certificate grabbing (https)\n");
-	printf("\t 1.4) TLS certificate grabbing (sftp/ssh)\n");
-	printf("\t 1.5) Headers grabbing (http/https)\n\n");
-	printf("\t 2) HTTP:\n");
-	printf("\t 2.1) Evaluate HTTP methods allowed by server (http/https)\n");
-	printf("\t 2.2) Evaluate server code responses with spoofed host headers (http/https)\n");
-	printf("\t 2.3) Trying to get webpages and interesting files (http/https)\n\n");
-	printf("\t 3) Brute Force:\n");
-	printf("\t 3.1) Trying to perform logins by using brute force (sftp/ssh)\n");
-	printf("\t 3.2) Trying to perform logins by using brute force (ftp)\n");
-	printf("\t 3.3) Trying to perform logins by using brute force (mysql)\n\n");
-	printf("\t 4) Buffer Overflow:\n");
-	printf("\t 4.1) Trying to perform Code Red virus attack - Buffer Overflow (any -GET- service)\n\n");
-	printf("\t 5) DOS Attacks:\n");
-	printf("\t 5.1) DOS Syn Flood Attack (any service)\n\n");
-	printf("\t Others:\n");
-	printf("\t i) Interactive mode (any service)\n");
-	printf("\t s) System Call\n");
-	printf("\t h) Show options\n");
-	printf("\t c) Change port\n");
-	printf("\t e) Exit\n");
 }
 
 void * receive_ack( void *ptr ){
@@ -399,6 +313,11 @@ unsigned short csum(unsigned short *ptr,int nbytes){
 	return(r);
 }
 
+void show_error(char *errMsg, int errnum){
+	printf("%s",HRED);
+	(errnum==0)?(printf("%s\n", errMsg)):(printf("%s Error %d (%s)\n", errMsg, errnum, strerror(errnum)));
+	printf("%s",DEFAULT);
+}
 
 
 

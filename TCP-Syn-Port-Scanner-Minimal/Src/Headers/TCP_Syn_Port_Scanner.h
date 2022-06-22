@@ -12,31 +12,19 @@
 #define HEADERS_TCP_SYN_PORT_SCANNER_H_
 
 #include<stdio.h>
-#include<string.h>
 #include<stdlib.h>
+#include <string.h>
+#include <unistd.h>
 #include<sys/socket.h>
 #include<errno.h>
 #include<pthread.h>
 #include<netdb.h>
-#include<arpa/inet.h>
 #include<netinet/tcp.h>
 #include<netinet/ip.h>
+#include<arpa/inet.h>
 #include<time.h>
-#include<signal.h>
-#include<unistd.h>
-#include<fcntl.h>
-#include<curl/curl.h>
-#define LIBSSH_STATIC 1
-#include<libssh2.h>
-#include<libssh2_sftp.h>
-#include<sys/types.h>
-#include<ctype.h>
-#include<samba-4.0/libsmbclient.h>
-#include<libtelnet.h>
-#include<libcli.h>
-#include <mysql/mysql.h>
 
-#pragma GCC diagnostic ignored "-Wformat-truncation"
+//#pragma GCC diagnostic ignored "-Wformat-truncation"
 
 #define RETURN_ERROR 	-1
 #define RETURN_OK 	0
@@ -57,15 +45,12 @@
 #define DEFAULT "\e[0m"
 #define CANT_PORTS 	5000
 #define PACKET_FORWARDING_LIMIT 	3
-#define BUFFER_RECV_MSG 	10240
 #define PATH_TO_RESOURCES 	"/home/lucho/git/TCP-Syn-Port-Scanner/TCP-Syn-Port-Scanner/Src/Resources/"
 #define PORT_FILTERED 	0
 #define PORT_OPENED 	1
 #define PORT_CLOSED 	2
 
 static const long RETURN_THREAD_OK;
-
-int finishCurrentProcess;
 
 struct pseudo_header{
 	unsigned int source_address;
@@ -83,9 +68,6 @@ typedef struct message{
 
 struct in_addr dest_ip;
 
-int hack_port(in_addr_t ip, int port);
-void show_options(int port);
-int open_file(char *fileName, FILE **f);
 void show_error(char *errMsg, int errnum);
 void * receive_ack( void *ptr );
 void process_packet(unsigned char* , int);

@@ -4,13 +4,13 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../Src/TCP_Syn_Port_Scanner_Minimal.c 
+../Src/TCP_Syn_Port_Scanner.c 
 
 C_DEPS += \
-./Src/TCP_Syn_Port_Scanner_Minimal.d 
+./Src/TCP_Syn_Port_Scanner.d 
 
 OBJS += \
-./Src/TCP_Syn_Port_Scanner_Minimal.o 
+./Src/TCP_Syn_Port_Scanner.o 
 
 
 # Each subdirectory must supply rules for building sources it contributes
@@ -25,7 +25,7 @@ Src/%.o: ../Src/%.c Src/subdir.mk
 clean: clean-Src
 
 clean-Src:
-	-$(RM) ./Src/TCP_Syn_Port_Scanner_Minimal.d ./Src/TCP_Syn_Port_Scanner_Minimal.o
+	-$(RM) ./Src/TCP_Syn_Port_Scanner.d ./Src/TCP_Syn_Port_Scanner.o
 
 .PHONY: clean-Src
 
