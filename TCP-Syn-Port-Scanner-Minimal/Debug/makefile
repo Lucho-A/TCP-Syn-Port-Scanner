@@ -25,7 +25,7 @@ $(wildcard ../makefile.init) \
 $(wildcard ../makefile.targets) \
 
 
-BUILD_ARTIFACT_NAME := TCP-Syn-Port-Scanner-Minimal
+BUILD_ARTIFACT_NAME := TCP-Syn-Port-Scanner
 BUILD_ARTIFACT_EXTENSION :=
 BUILD_ARTIFACT_PREFIX :=
 BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ARTIFACT_EXTENSION),.$(BUILD_ARTIFACT_EXTENSION),)
@@ -36,19 +36,19 @@ BUILD_ARTIFACT := $(BUILD_ARTIFACT_PREFIX)$(BUILD_ARTIFACT_NAME)$(if $(BUILD_ART
 all: main-build
 
 # Main-build Target
-main-build: TCP-Syn-Port-Scanner-Minimal
+main-build: TCP-Syn-Port-Scanner
 
 # Tool invocations
-TCP-Syn-Port-Scanner-Minimal: $(OBJS) $(USER_OBJS) makefile objects.mk $(OPTIONAL_TOOL_DEPS)
+TCP-Syn-Port-Scanner: $(OBJS) $(USER_OBJS) makefile objects.mk $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: Cross GCC Linker'
-	gcc  -o "TCP-Syn-Port-Scanner-Minimal" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc  -o "TCP-Syn-Port-Scanner" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 
 # Other Targets
 clean:
-	-$(RM) TCP-Syn-Port-Scanner-Minimal
+	-$(RM) TCP-Syn-Port-Scanner
 	-@echo ' '
 
 .PHONY: all clean dependents main-build
