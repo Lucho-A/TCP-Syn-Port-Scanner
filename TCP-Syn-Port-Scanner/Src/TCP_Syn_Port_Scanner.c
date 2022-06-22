@@ -27,7 +27,7 @@ int main(int argc, char *argv[]){
 	printf("\n*");
 	printf("\n*%s v1.0.5",CYAN);
 	printf("\n*");
-	printf("\n* For a complete cyber & security framework, as well, for others systems/plattforms assessments (Cybersecurity, Oracle, AIX, SAP HANA, among others), pls, contact me!");
+	printf("\n* For a complete cybersecurity framework, as well, for others systems/plattforms assessments (Cybersecurity, Oracle, AIX, SAP HANA, among others), pls, contact me!");
 	printf("\n*");
 	printf("\n* Email: luis.alfie@gmail.com");
 	printf("\n***********************************************************************************************************************************************************************");
