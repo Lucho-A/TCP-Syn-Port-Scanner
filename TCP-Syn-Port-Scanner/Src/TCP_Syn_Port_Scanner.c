@@ -41,23 +41,22 @@ int main(int argc, char *argv[]){
 	switch(argc){
 	case 3:
 		if(strtol(argv[2],NULL,10)>0 && strtol(argv[2],NULL,10)<5001){
-			int argOK=TRUE;
 			snprintf(target,sizeof(target),"%s",argv[1]);
 			cantPortToScan=strtol(argv[2],NULL,10);
-			if(argOK==TRUE) break;
+			break;
 		}
 		/* no break */
 	default:
 		printf("%s",WHITE);
 		printf("\nUsage (as root): 'TCP-Syn-Port-Scanner' ip|url cantPortToScan (1-5000)\n");
-		printf("v.gr: ./TCP-Syn-Port-Scanner www.scanme.org 500\n\n");
+		printf("v.gr: ./TCP-Syn-Port-Scanner scanme.org 500\n\n");
 		exit(EXIT_FAILURE);
 	}
 	clock_gettime(CLOCK_REALTIME, &tInit);
 	FILE *f=NULL;
 	if((f=fopen(PATH_TO_RESOURCES "Ports.txt","r"))==NULL){
 		printf("%s",HRED);
-		printf("fopen(%s) error: Error: %d (%s)\n", "Ports.txt", errno, strerror(errno));
+		printf("\nfopen(%s) error: Error: %d (%s)\n", "Ports.txt", errno, strerror(errno));
 		printf("%s",DEFAULT);
 		exit(EXIT_FAILURE);
 	}
@@ -160,7 +159,7 @@ int main(int argc, char *argv[]){
 				}
 			}
 		}
-		sleep(1);
+		usleep(500000);
 		(contFilteredPortsChange==contFilteredPorts)?(endSendPackets++):(endSendPackets=0);
 		contFilteredPortsChange=contFilteredPorts;
 		contFilteredPorts=0;
