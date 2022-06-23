@@ -24,31 +24,26 @@
 #include<arpa/inet.h>
 #include<time.h>
 
-//#pragma GCC diagnostic ignored "-Wformat-truncation"
-
-#define RETURN_ERROR 	-1
-#define RETURN_OK 	0
-#define TRUE 	1
-#define FALSE 	0
-#define HRED 	"\e[0;91m"
-#define RED 	"\e[0;31m"
-#define HGREEN 	"\e[0;92m"
-#define HBLUE 	"\e[0;94m"
-#define HYELLOW "\e[0;93m"
-#define YELLOW "\e[0;33m"
-#define BLUE 	"\e[0;34m"
-#define CYAN 	"\e[0;36m"
-#define HCYAN 	"\e[0;96m"
-#define WHITE 	"\e[0;37m"
-#define GREEN 	"\e[0;32m"
-#define HWHITE 	"\e[0;97m"
-#define DEFAULT "\e[0m"
-#define CANT_PORTS 	5000
-#define PACKET_FORWARDING_LIMIT 	3
-#define PATH_TO_RESOURCES 	"/home/lucho/git/TCP-Syn-Port-Scanner/TCP-Syn-Port-Scanner/Src/Resources/"
-#define PORT_FILTERED 	0
-#define PORT_OPENED 	1
-#define PORT_CLOSED 	2
+#define RETURN_ERROR 			-1
+#define RETURN_OK 				0
+#define TRUE 					1
+#define FALSE 					0
+#define HRED 					"\e[0;91m"
+#define RED 					"\e[0;31m"
+#define HGREEN 					"\e[0;92m"
+#define HYELLOW 				"\e[0;93m"
+#define CYAN 					"\e[0;36m"
+#define HCYAN 					"\e[0;96m"
+#define WHITE 					"\e[0;37m"
+#define GREEN 					"\e[0;32m"
+#define HWHITE 					"\e[0;97m"
+#define DEFAULT 				"\e[0m"
+#define CANT_PORTS 				5000
+#define PACKET_FORWARDING_LIMIT 3
+#define PATH_TO_RESOURCES 		"/home/lucho/git/TCP-Syn-Port-Scanner/TCP-Syn-Port-Scanner/Src/Resources/"
+#define PORT_FILTERED 			0
+#define PORT_OPENED 			1
+#define PORT_CLOSED 			2
 
 static const long RETURN_THREAD_OK;
 
@@ -71,9 +66,9 @@ struct in_addr dest_ip;
 void show_error(char *errMsg, int errnum);
 void * receive_ack( void *ptr );
 void process_packet(unsigned char* , int);
+void get_local_ip (char *);
 unsigned short csum(unsigned short * , int );
 char * hostname_to_ip(char * );
-void get_local_ip (char *);
 int start_sniffer();
 
 #endif /* HEADERS_TCP_SYN_PORT_SCANNER_H_ */
