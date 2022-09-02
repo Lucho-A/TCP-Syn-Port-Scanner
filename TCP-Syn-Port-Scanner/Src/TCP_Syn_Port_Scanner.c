@@ -17,7 +17,7 @@ int contFilteredPorts=0;
 int portStatus[65536]={-1};
 int portsToScan[CANT_PORTS]={0};
 int cantPortToScan=0;
-int endProces=FALSE;
+int endProcess=FALSE;
 
 int main(int argc, char *argv[]){
 	system("clear");
@@ -55,9 +55,7 @@ int main(int argc, char *argv[]){
 	clock_gettime(CLOCK_REALTIME, &tInit);
 	FILE *f=NULL;
 	if((f=fopen(PATH_TO_RESOURCES "Ports.txt","r"))==NULL){
-		printf("%s",HRED);
-		printf("\nfopen(%s) error: Error: %d (%s)\n", "Ports.txt", errno, strerror(errno));
-		printf("%s",DEFAULT);
+		show_error("Error opening Ports.txt", errno);
 		exit(EXIT_FAILURE);
 	}
 	i=0;
@@ -66,11 +64,11 @@ int main(int argc, char *argv[]){
 	printf("%s",WHITE);
 	time_t timestamp = time(NULL);
 	struct tm tm = *localtime(&timestamp);
-	printf("\n\nStarting TCP Syn Port Scanning... (%d/%02d/%02d %02d:%02d:%02d)\n\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+	printf("\n\nStarting TCP Syn Port Scanning... (%d/%02d/%02d %02d:%02d:%02d UTC:%s)\n\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,tm.tm_zone);
 	printf("%s",DEFAULT);
 	int sk=socket (AF_INET, SOCK_RAW , IPPROTO_TCP);
 	if(sk<0){
-		show_error("socket() error.", errno);
+		show_error("Error creating socket.", errno);
 		exit(EXIT_FAILURE);
 	}
 	char datagram[4096];
@@ -95,7 +93,7 @@ int main(int argc, char *argv[]){
 	int source_port = 65432;
 	char source_ip[20];
 	get_local_ip(source_ip);
-	printf("%sLocal source IP is %s%s \n\n",DEFAULT, HWHITE,source_ip);
+	printf("\n%sLocal source IP is %s%s \n\n",DEFAULT, HWHITE,source_ip);
 	memset(datagram,0,4096);
 	//IP Header init
 	iph->ihl = 5;
@@ -104,7 +102,7 @@ int main(int argc, char *argv[]){
 	iph->tot_len = sizeof (struct ip) + sizeof (struct tcphdr);
 	iph->id = htons (54321);
 	iph->frag_off = htons(16384);
-	iph->ttl = 64;
+	iph->ttl = 255; //spoofed
 	iph->protocol = IPPROTO_TCP;
 	iph->check = 0;
 	iph->saddr = inet_addr(source_ip);
@@ -128,13 +126,13 @@ int main(int argc, char *argv[]){
 	int one = 1;
 	const int *val = &one;
 	if (setsockopt (sk, IPPROTO_IP, IP_HDRINCL, val, sizeof (one)) < 0){
-		printf ("setsockopt() error. Error: %d (%s)\n", errno, strerror(errno));
+		show_error("Error setting socket options.", errno);
 		exit(EXIT_FAILURE);
 	}
 	char *threadMsg = "Sniffer Thread";
 	pthread_t sniffer_thread;
 	if(pthread_create(&sniffer_thread,NULL,receive_ack,(void*) threadMsg)<0){
-		show_error("pthread_create() error.",errno);
+		show_error("Error creating thread.",errno);
 		exit(EXIT_FAILURE);
 	}
 	dest.sin_family = AF_INET;
@@ -159,12 +157,12 @@ int main(int argc, char *argv[]){
 				}
 			}
 		}
-		usleep(500000);
+		usleep(SEND_PACKETS_DELAY);
 		(contFilteredPortsChange==contFilteredPorts)?(endSendPackets++):(endSendPackets=0);
 		contFilteredPortsChange=contFilteredPorts;
 		contFilteredPorts=0;
 	}
-	endProces=TRUE;
+	endProcess=TRUE;
 	pthread_join(sniffer_thread,NULL);
 	contFilteredPorts=cantPortToScan-contOpenedPorts-contClosedPorts;
 	struct servent *service_resp=NULL;
@@ -197,6 +195,7 @@ int main(int argc, char *argv[]){
 	printf("%s",HRED);
 	printf("\tOpened: %d\n\n",contOpenedPorts);
 	printf("%s",DEFAULT);
+	return EXIT_SUCCESS;
 }
 
 void * receive_ack( void *ptr ){
@@ -212,15 +211,15 @@ int start_sniffer(){
 	unsigned char *buffer = (unsigned char *)malloc(65536);
 	sock_raw = socket(AF_INET , SOCK_RAW , IPPROTO_TCP);
 	if(sock_raw < 0){
-		show_error("socket() Error.", errno);
+		show_error("Error creating socket.", errno);
 		fflush(stdout);
 		exit(EXIT_FAILURE);
 	}
 	saddr_size = sizeof saddr;
-	while(endProces==FALSE){
+	while(endProcess==FALSE){
 		data_size=recvfrom(sock_raw,buffer,65536,0,&saddr,&saddr_size);
 		if(data_size<0){
-			show_error("recvfrom() error.", errno);
+			show_error("Error reciving packets.", errno);
 			fflush(stdout);
 			exit(EXIT_FAILURE);
 		}
@@ -274,19 +273,19 @@ void get_local_ip (char * buffer){
 	serv.sin_port=htons(dns_port);
 	int resp=connect(sk,(const struct sockaddr*) &serv,sizeof(serv));
 	if(resp!=0){
-		show_error("connect() error.", errno);
+		show_error("Error connecting socket.", errno);
 		exit(EXIT_FAILURE);
 	}
 	struct sockaddr_in name;
 	socklen_t namelen=sizeof(name);
 	resp=getsockname(sk,(struct sockaddr*) &name, &namelen);
 	if(resp!=0){
-		show_error("getsockname() error.",errno);
+		show_error("Error getting socket name.",errno);
 		exit(EXIT_FAILURE);
 	}
 	const char *p = inet_ntop(AF_INET, &name.sin_addr, buffer, 100);
 	if(p==NULL){
-		show_error("inet_ntop() error.",errno);
+		show_error("Error converting Internet address.",errno);
 		exit(EXIT_FAILURE);
 	}
 	close(sk);

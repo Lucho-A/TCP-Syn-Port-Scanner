@@ -40,10 +40,14 @@
 #define DEFAULT 				"\e[0m"
 #define CANT_PORTS 				5000
 #define PACKET_FORWARDING_LIMIT 3
+#define SEND_PACKETS_DELAY		500000
 #define PATH_TO_RESOURCES 		"/home/lucho/git/TCP-Syn-Port-Scanner/TCP-Syn-Port-Scanner/Resources/"
-#define PORT_FILTERED 			0
-#define PORT_OPENED 			1
-#define PORT_CLOSED 			2
+
+enum portStatus{
+	PORT_FILTERED=0,
+	PORT_OPENED,
+	PORT_CLOSED
+};
 
 static const long RETURN_THREAD_OK;
 
@@ -55,11 +59,6 @@ struct pseudo_header{
 	unsigned short tcp_length;
 	struct tcphdr tcp;
 };
-
-typedef struct message{
-	char descrip[128];
-	char msg[128];
-}Message;
 
 struct in_addr dest_ip;
 
