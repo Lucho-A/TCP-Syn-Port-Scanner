@@ -2,7 +2,7 @@
  ============================================================================
  Name        : TCP Syn Port Scanner.h
  Author      : L.
- Version     : 1.0.5
+ Version     : 1.0.6
  Copyright   : GNU General Public License v3.0
  Description : Header file
  ============================================================================
@@ -13,8 +13,8 @@
 
 #include<stdio.h>
 #include<stdlib.h>
-#include <string.h>
-#include <unistd.h>
+#include<string.h>
+#include<unistd.h>
 #include<sys/socket.h>
 #include<errno.h>
 #include<pthread.h>
@@ -24,6 +24,7 @@
 #include<arpa/inet.h>
 #include<time.h>
 
+#define VERSION 				"1.0.6"
 #define RETURN_ERROR 			-1
 #define RETURN_OK 				0
 #define TRUE 					1
@@ -38,9 +39,10 @@
 #define GREEN 					"\e[0;32m"
 #define HWHITE 					"\e[0;97m"
 #define DEFAULT 				"\e[0m"
-#define CANT_PORTS 				5000
+#define MAX_CANT_PORTS 			5000
+#define MAX_SHOW_PORTS 			15
 #define PACKET_FORWARDING_LIMIT 3
-#define SEND_PACKETS_DELAY		500000
+#define SEND_PACKETS_DELAY		100000
 #define PATH_TO_RESOURCES 		"/home/lucho/git/TCP-Syn-Port-Scanner/TCP-Syn-Port-Scanner/Resources/"
 
 enum portStatus{
@@ -50,6 +52,12 @@ enum portStatus{
 };
 
 static const long RETURN_THREAD_OK;
+
+struct port{
+	int portNumber;
+	int portStatus;
+	char ianaService[50];
+};
 
 struct pseudo_header{
 	unsigned int source_address;
@@ -62,12 +70,12 @@ struct pseudo_header{
 
 struct in_addr dest_ip;
 
-void show_error(char *errMsg, int errnum);
-void * receive_ack( void *ptr );
-void process_packet(unsigned char* , int);
+void show_error(char *, int);
+void *receive_ack(void *);
+void process_packet(unsigned char*,int);
 void get_local_ip (char *);
-unsigned short csum(unsigned short * , int );
-char * hostname_to_ip(char * );
+unsigned short csum(unsigned short *,int );
+char *hostname_to_ip(char *);
 int start_sniffer();
 
 #endif /* HEADERS_TCP_SYN_PORT_SCANNER_H_ */
