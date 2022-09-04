@@ -34,10 +34,17 @@ int main(int argc, char *argv[]){
 	}
 	char target[500]="", errorMsg[50]="";
 	int argOK=TRUE;
-	for(int i=2;i<argc;i++){
+	for(int i=1;i<argc;i++){
+		if(strcmp(argv[i],"-h")==0){
+			argOK=FALSE;
+			break;
+		}
+		if(i==1){
+			snprintf(target,sizeof(target),"%s",argv[i]);
+			continue;
+		}
 		if(i==2){
 			if(strtol(argv[2],NULL,10)>0 && strtol(argv[2],NULL,10)<5001){
-				snprintf(target,sizeof(target),"%s",argv[1]);
 				cantPortsToScan=strtol(argv[2],NULL,10);
 				continue;
 			}
@@ -46,13 +53,10 @@ int main(int argc, char *argv[]){
 			argOK=FALSE;
 			break;
 		}
-		if(strcmp(argv[i],"-h")==0){
-			argOK=FALSE;
-			break;
-		}
 		snprintf(errorMsg,sizeof(errorMsg),"\n\nArgument %s not recognized", argv[i]);
 		show_error(errorMsg, 0);
 		argOK=FALSE;
+		break;
 	}
 	if(!argOK){
 		printf("%s",WHITE);
@@ -92,7 +96,7 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in dest;
 	struct pseudo_header psh;
 	if(inet_addr(target)!=-1){
-		printf("It's not nesessary resolve the hostname (%s%s)\n",HWHITE,target);
+		printf("No need to resolve the hostname (%s%s)\n",HWHITE,target);
 		dest_ip.s_addr = inet_addr(target);
 	}else{
 		char *ip=hostname_to_ip(target);
@@ -100,7 +104,7 @@ int main(int argc, char *argv[]){
 			printf("Unable to resolve hostname : %s%s\n\n",HWHITE, target);
 			exit(EXIT_FAILURE);
 		}
-		printf("URL (%s) resolved to: %s%s \n\n" , target ,HWHITE, ip);
+		printf("URL (%s) resolved to: %s%s \n" , target ,HWHITE, ip);
 		dest_ip.s_addr = inet_addr( hostname_to_ip(target) );
 	}
 	int source_port = 65432;
@@ -142,9 +146,9 @@ int main(int argc, char *argv[]){
 		show_error("Error setting socket options.", errno);
 		exit(EXIT_FAILURE);
 	}
-	char *threadMsg = "Sniffer Thread";
-	pthread_t sniffer_thread;
-	if(pthread_create(&sniffer_thread,NULL,receive_ack,(void*) threadMsg)<0){
+	char *threadMsg = "Reading packets thread";
+	pthread_t reading_packets_thread;
+	if(pthread_create(&reading_packets_thread,NULL,start_reading_packets,(void*) threadMsg)<0){
 		show_error("Error creating thread.",errno);
 		exit(EXIT_FAILURE);
 	}
@@ -206,12 +210,12 @@ int main(int argc, char *argv[]){
 	return EXIT_SUCCESS;
 }
 
-void * receive_ack( void *ptr ){
-	start_sniffer();
+void * start_reading_packets( void *ptr ){
+	reading_packets();
 	return (void*)&RETURN_THREAD_OK;
 }
 
-int start_sniffer(){
+int reading_packets(){
 	int sock_raw, data_size;
 	socklen_t saddr_size;
 	struct sockaddr saddr;
@@ -228,13 +232,13 @@ int start_sniffer(){
 			show_error("Error reciving packets.", errno);
 			exit(EXIT_FAILURE);
 		}
-		if(data_size>0)	process_packet(buffer, data_size);
+		if(data_size>0)	process_packets(buffer, data_size);
 	}
 	close(sock_raw);
 	return RETURN_OK;
 }
 
-void process_packet(unsigned char* buffer, int size){
+void process_packets(unsigned char* buffer, int size){
 	struct iphdr *iph=(struct iphdr*)buffer;
 	struct sockaddr_in source,dest;
 	unsigned short iphdrlen;

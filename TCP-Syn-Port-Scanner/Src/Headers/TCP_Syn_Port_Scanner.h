@@ -71,11 +71,11 @@ struct pseudo_header{
 struct in_addr dest_ip;
 
 void show_error(char *, int);
-void *receive_ack(void *);
-void process_packet(unsigned char*,int);
+void *start_reading_packets(void *);
+int reading_packets();
+void process_packets(unsigned char*,int);
 void get_local_ip (char *);
 unsigned short csum(unsigned short *,int );
 char *hostname_to_ip(char *);
-int start_sniffer();
 
 #endif /* HEADERS_TCP_SYN_PORT_SCANNER_H_ */
