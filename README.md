@@ -7,9 +7,9 @@ For a complete Cybersecurity framework, as well, for others systems/plattforms a
 
 Examples: 
 ```
-sudo ./TCP-Syn-Port-Scanner -h
+# ./TCP-Syn-Port-Scanner -h
 ```
 ```
-sudo ./TCP-Syn-Port-Scanner lucho-alfie.ddns.net 1000
+sudo ./TCP-Syn-Port-Scanner lucho-alfie.ddns.net 500
 ```
-![imagen](https://user-images.githubusercontent.com/40904281/189027436-56e63452-f092-485b-a914-8f6ee1330bd7.png)
+![imagen](https://user-images.githubusercontent.com/40904281/189240809-d278753d-9f59-4b44-9ed9-e6a4111c62a5.png)
