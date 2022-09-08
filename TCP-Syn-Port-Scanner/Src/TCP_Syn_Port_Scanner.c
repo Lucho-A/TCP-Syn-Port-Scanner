@@ -91,7 +91,7 @@ int main(int argc, char *argv[]){
 			printf("Unable to resolve the URL: %s%s\n\n",HWHITE, target);
 			exit(EXIT_FAILURE);
 		}
-		printf("URL (%s) resolved to: %s%s\n\n" , target ,HWHITE, ip);
+		printf("URL (%s%s%s) resolved to: %s%s\n\n",HWHITE, target,DEFAULT ,HWHITE, ip);
 		dest_ip.s_addr = inet_addr( hostname_to_ip(target) );
 	}
 	printf("%s",DEFAULT);
