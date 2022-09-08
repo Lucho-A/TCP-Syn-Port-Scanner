@@ -77,6 +77,6 @@ void process_packets(unsigned char*,int);
 void get_local_ip (char *);
 unsigned short csum(unsigned short *,int );
 void ip_to_hostname(char *, char *);
-char *hostname_to_ip(char *);
+void hostname_to_ip(char *, char **);
 
 #endif /* HEADERS_TCP_SYN_PORT_SCANNER_H_ */

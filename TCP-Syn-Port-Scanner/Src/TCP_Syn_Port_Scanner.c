@@ -19,13 +19,13 @@ int endProcess=FALSE;
 int main(int argc, char *argv[]){
 	system("clear");
 	printf("%s",CYAN);
-	printf("\n***********************************************************************************************************************************************************************\n");
-	printf("* %sTCP Syn Port Scanner v%s by L.",HCYAN, VERSION);
-	printf("\n*%s", CYAN);
-	printf("\n* For a complete cybersecurity framework, as well, for others systems/plattforms assessments (Cybersecurity, Oracle, AIX, SAP HANA, among others), pls, contact me!");
+	printf("\n**************************************************************************************************************************************************************************\n");
+	printf("* %sTCP Syn Port Scanner v%s by L.%s",HCYAN, VERSION, CYAN);
+	printf("\n*");
+	printf("\n* For a complete cybersecurity framework, as well, for others systems/plattforms assessments (Cybersecurity, Oracle, AIX, COBIT, SAP HANA, among others), pls, contact me!");
 	printf("\n*");
 	printf("\n* Email: luis.alfie@gmail.com");
-	printf("\n***********************************************************************************************************************************************************************");
+	printf("\n**************************************************************************************************************************************************************************");
 	printf("%s",DEFAULT);
 	if(getuid()!=0){
 		show_error("\n\nYou must be root for running the program.\n\n",0);
@@ -56,11 +56,12 @@ int main(int argc, char *argv[]){
 		break;
 	}
 	if(!argOK){
-		printf("%s",WHITE);
-		printf("\n\nUsage (as root): 'TCP-Syn-Port-Scanner' ip|url cantPortToScan (1-5000) -h\n\n");
+		printf("\n\nUsage (as root): ./TCP-Syn-Port-Scanner [-h] ip|url cantPortToScan(1-5000)\n\n");
 		printf("Options:\n");
 		printf("-h: Show this.\n\n");
-		printf("v.gr: sudo ./TCP-Syn-Port-Scanner scanme.org 500\n\n");
+		printf("Examples:\n");
+		printf("# ./TCP-Syn-Port-Scanner lucho-alfie.ddns.net -h\n");
+		printf("sudo ./TCP-Syn-Port-Scanner lucho-alfie.ddns.net 500\n\n");
 		exit(EXIT_FAILURE);
 	}
 	FILE *f=NULL;
@@ -79,25 +80,23 @@ int main(int argc, char *argv[]){
 	clock_gettime(CLOCK_REALTIME, &tInit);
 	time_t timestamp = time(NULL);
 	struct tm tm = *localtime(&timestamp);
-	printf("%s",WHITE);
 	printf("\n\nStarting TCP Syn Port Scanning... (%d/%02d/%02d %02d:%02d:%02d UTC:%s)\n\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,tm.tm_zone);
-	printf("%s",DEFAULT);
-	char *ip=hostname_to_ip(target);
+	char *ip=NULL;
+	hostname_to_ip(target,&ip);
 	if(inet_addr(target)!=-1){
-		printf("No need to resolve the URL (%s%s)\n\n",HWHITE,target);
-		dest_ip.s_addr = inet_addr(target);
+		printf("No need to resolve the URL (%s%s%s)\n\n",HWHITE,target,DEFAULT);
+		dest_ip.s_addr=inet_addr(target);
 	}else{
 		if(ip==NULL){
-			printf("Unable to resolve the URL: %s%s\n\n",HWHITE, target);
+			printf("Unable to resolve the URL: %s%s%s\n\n",HWHITE,target,DEFAULT);
 			exit(EXIT_FAILURE);
 		}
-		printf("URL (%s%s%s) resolved to: %s%s\n\n",HWHITE, target,DEFAULT ,HWHITE, ip);
-		dest_ip.s_addr = inet_addr( hostname_to_ip(target) );
+		printf("URL (%s%s%s) resolved to: %s%s%s\n\n",HWHITE,target,DEFAULT,HWHITE,ip,DEFAULT);
+		dest_ip.s_addr=inet_addr(ip);
 	}
-	printf("%s",DEFAULT);
 	char hostname[128]="";
-	ip_to_hostname(ip, hostname);
-	printf("Hostname: %s%s%s \n",HWHITE,hostname,DEFAULT);
+	ip_to_hostname(ip,hostname);
+	printf("Hostname: %s%s%s\n",HWHITE,hostname,DEFAULT);
 	int sk=socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
 	if(sk<0){
 		show_error("Error creating socket.", errno);
@@ -109,11 +108,10 @@ int main(int argc, char *argv[]){
 	struct sockaddr_in dest;
 	struct pseudo_header psh;
 	int source_port = 65432;
-	char source_ip[20];
+	char source_ip[20]="";
 	get_local_ip(source_ip);
 	printf("\n%sLocal source IP is %s%s \n\n",DEFAULT, HWHITE,source_ip);
 	memset(datagram,0,4096);
-	//IP Header init
 	iph->ihl = 5;
 	iph->version = 4;
 	iph->tos = 0;
@@ -126,7 +124,6 @@ int main(int argc, char *argv[]){
 	iph->saddr = inet_addr(source_ip);
 	iph->daddr = dest_ip.s_addr;
 	iph->check = csum ((unsigned short *) datagram, iph->tot_len >> 1);
-	//TCP Header init
 	tcph->source = htons(source_port);
 	tcph->dest = htons(80);
 	tcph->seq = htonl(1234567890);
@@ -279,14 +276,13 @@ void ip_to_hostname(char *ip, char *hostname){
 	(!resp)?(snprintf(hostname,sizeof(host),"%s",host)):(snprintf(hostname,sizeof(host),"%s",""));
 }
 
-char* hostname_to_ip(char * hostname){
+void hostname_to_ip(char *hostname, char **ip){
 	struct hostent *he;
 	struct in_addr **addr_list;
 	int i;
-	if((he=gethostbyname(hostname))==NULL) return NULL;
+	if((he=gethostbyname(hostname))==NULL) return;
 	addr_list=(struct in_addr **) he->h_addr_list;
-	for(i=0;addr_list[i]!=NULL;i++) return inet_ntoa(*addr_list[i]);
-	return NULL;
+	for(i=0;addr_list[i]!=NULL;i++) *ip=inet_ntoa(*addr_list[i]);
 }
 
 void get_local_ip(char * buffer){
