@@ -2,7 +2,7 @@
  ============================================================================
  Name        : TCP Syn Port Scanner.h
  Author      : L.
- Version     : 1.0.6
+ Version     : 1.0.7
  Copyright   : GNU General Public License v3.0
  Description : Header file
  ============================================================================
@@ -24,7 +24,7 @@
 #include<arpa/inet.h>
 #include<time.h>
 
-#define VERSION 				"1.0.6"
+#define VERSION 				"1.0.7"
 #define RETURN_ERROR 			-1
 #define RETURN_OK 				0
 #define TRUE 					1
@@ -42,7 +42,7 @@
 #define MAX_CANT_PORTS 			5000
 #define MAX_SHOW_PORTS 			15
 #define PACKET_FORWARDING_LIMIT 3
-#define SEND_PACKETS_DELAY		100000
+#define SEND_PACKETS_DELAY		200000
 #define PATH_TO_RESOURCES 		"/home/lucho/git/TCP-Syn-Port-Scanner/TCP-Syn-Port-Scanner/Resources/"
 
 enum portStatus{
@@ -76,6 +76,7 @@ int reading_packets();
 void process_packets(unsigned char*,int);
 void get_local_ip (char *);
 unsigned short csum(unsigned short *,int );
+void ip_to_hostname(char *, char *);
 char *hostname_to_ip(char *);
 
 #endif /* HEADERS_TCP_SYN_PORT_SCANNER_H_ */

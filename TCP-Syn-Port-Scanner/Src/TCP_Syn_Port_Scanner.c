@@ -2,7 +2,7 @@
  ============================================================================
  Name        : TCP Syn Port Scanner.c
  Author      : L.
- Version     : 1.0.6
+ Version     : 1.0.7
  Copyright   : GNU General Public License v3.0
  Description : TCP Syn Port Scanner developed in C, Ansi-style
  ============================================================================
@@ -12,7 +12,6 @@
 
 int contClosedPorts=0;
 int contOpenedPorts=0;
-int contFilteredPorts=0;
 int cantPortsToScan=0;
 struct port *portsToScan=NULL;
 int endProcess=FALSE;
@@ -33,12 +32,9 @@ int main(int argc, char *argv[]){
 		exit(EXIT_FAILURE);
 	}
 	char target[500]="", errorMsg[50]="";
-	int argOK=TRUE;
+	int argOK=FALSE;
 	for(int i=1;i<argc;i++){
-		if(strcmp(argv[i],"-h")==0){
-			argOK=FALSE;
-			break;
-		}
+		if(strcmp(argv[1],"-h")==0) break;
 		if(i==1){
 			snprintf(target,sizeof(target),"%s",argv[i]);
 			continue;
@@ -46,6 +42,7 @@ int main(int argc, char *argv[]){
 		if(i==2){
 			if(strtol(argv[2],NULL,10)>0 && strtol(argv[2],NULL,10)<5001){
 				cantPortsToScan=strtol(argv[2],NULL,10);
+				argOK=TRUE;
 				continue;
 			}
 			snprintf(errorMsg,sizeof(errorMsg),"\n\nYou must enter a valid number (1-5000)");
@@ -78,13 +75,29 @@ int main(int argc, char *argv[]){
 		struct servent *service_resp = getservbyport(ntohs(portsToScan[i].portNumber), "tcp");
 		(service_resp==NULL)?(strcpy(portsToScan[i].ianaService,"???")):(strcpy(portsToScan[i].ianaService, service_resp->s_name));
 	}
-	printf("%s",WHITE);
 	struct timespec tInit, tEnd;
 	clock_gettime(CLOCK_REALTIME, &tInit);
 	time_t timestamp = time(NULL);
 	struct tm tm = *localtime(&timestamp);
+	printf("%s",WHITE);
 	printf("\n\nStarting TCP Syn Port Scanning... (%d/%02d/%02d %02d:%02d:%02d UTC:%s)\n\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,tm.tm_zone);
 	printf("%s",DEFAULT);
+	char *ip=hostname_to_ip(target);
+	if(inet_addr(target)!=-1){
+		printf("No need to resolve the URL (%s%s)\n\n",HWHITE,target);
+		dest_ip.s_addr = inet_addr(target);
+	}else{
+		if(ip==NULL){
+			printf("Unable to resolve the URL: %s%s\n\n",HWHITE, target);
+			exit(EXIT_FAILURE);
+		}
+		printf("URL (%s) resolved to: %s%s\n\n" , target ,HWHITE, ip);
+		dest_ip.s_addr = inet_addr( hostname_to_ip(target) );
+	}
+	printf("%s",DEFAULT);
+	char hostname[128]="";
+	ip_to_hostname(ip, hostname);
+	printf("Hostname: %s%s%s \n",HWHITE,hostname,DEFAULT);
 	int sk=socket(AF_INET,SOCK_RAW,IPPROTO_TCP);
 	if(sk<0){
 		show_error("Error creating socket.", errno);
@@ -95,18 +108,6 @@ int main(int argc, char *argv[]){
 	struct tcphdr *tcph = (struct tcphdr *) (datagram + sizeof (struct ip));
 	struct sockaddr_in dest;
 	struct pseudo_header psh;
-	if(inet_addr(target)!=-1){
-		printf("No need to resolve the hostname (%s%s)\n",HWHITE,target);
-		dest_ip.s_addr = inet_addr(target);
-	}else{
-		char *ip=hostname_to_ip(target);
-		if(ip==NULL){
-			printf("Unable to resolve hostname : %s%s\n\n",HWHITE, target);
-			exit(EXIT_FAILURE);
-		}
-		printf("URL (%s) resolved to: %s%s \n" , target ,HWHITE, ip);
-		dest_ip.s_addr = inet_addr( hostname_to_ip(target) );
-	}
 	int source_port = 65432;
 	char source_ip[20];
 	get_local_ip(source_ip);
@@ -154,7 +155,7 @@ int main(int argc, char *argv[]){
 	}
 	dest.sin_family = AF_INET;
 	dest.sin_addr.s_addr = dest_ip.s_addr;
-	int contFilteredPortsChange=-1, endSendPackets=0;
+	int contFilteredPortsChange=-1, endSendPackets=0, contFilteredPorts=0;
 	while(endSendPackets!=PACKET_FORWARDING_LIMIT){
 		for(int i=0;i<cantPortsToScan;i++){
 			if(portsToScan[i].portStatus==PORT_FILTERED){
@@ -266,6 +267,16 @@ void process_packets(unsigned char* buffer, int size){
 			}
 		}
 	}
+}
+
+void ip_to_hostname(char *ip, char *hostname){
+	struct sockaddr_in sa;
+	memset(&sa, 0, sizeof sa);
+	sa.sin_family = AF_INET;
+	inet_pton(AF_INET, ip, &sa.sin_addr);
+	char host[1024], service[20];
+	int resp=getnameinfo((struct sockaddr*)&sa, sizeof(sa), host, sizeof host, service, sizeof service, 0);
+	(!resp)?(snprintf(hostname,sizeof(host),"%s",host)):(snprintf(hostname,sizeof(host),"%s",""));
 }
 
 char* hostname_to_ip(char * hostname){
