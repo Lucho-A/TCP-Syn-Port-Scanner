@@ -26,9 +26,9 @@ int main(int argc, char *argv[]){
 	printf("\n*");
 	printf("\n* Email: luis.alfie@gmail.com");
 	printf("\n**************************************************************************************************************************************************************************");
-	printf("%s",DEFAULT);
+	printf("%s\n",DEFAULT);
 	if(getuid()!=0){
-		show_error("\n\nYou must be root for running the program.\n\n",0);
+		show_error("\nYou must be root for running the program.\n\n",0);
 		exit(EXIT_FAILURE);
 	}
 	char target[500]="", errorMsg[50]="";
@@ -40,25 +40,25 @@ int main(int argc, char *argv[]){
 			continue;
 		}
 		if(i==2){
-			if(strtol(argv[2],NULL,10)>0 && strtol(argv[2],NULL,10)<5001){
-				cantPortsToScan=strtol(argv[2],NULL,10);
+			if(strtol(argv[i],NULL,10)>0 && strtol(argv[i],NULL,10)<5001){
+				cantPortsToScan=strtol(argv[i],NULL,10);
 				argOK=TRUE;
 				continue;
 			}
-			snprintf(errorMsg,sizeof(errorMsg),"\n\nYou must enter a valid number (1-5000)");
+			snprintf(errorMsg,sizeof(errorMsg),"\nYou must enter a valid number (1-5000)");
 			show_error(errorMsg, 0);
 			argOK=FALSE;
 			break;
 		}
-		snprintf(errorMsg,sizeof(errorMsg),"\n\nArgument %s not recognized", argv[i]);
+		snprintf(errorMsg,sizeof(errorMsg),"\nArgument %s not recognized", argv[i]);
 		show_error(errorMsg, 0);
 		argOK=FALSE;
 		break;
 	}
 	if(!argOK){
-		printf("\n\nUsage (as root): ./TCP-Syn-Port-Scanner [-h] ip|url cantPortToScan(1-5000)\n\n");
+		printf("\nUsage (as root): ./TCP-Syn-Port-Scanner [-h] ip|url cantPortToScan(1-5000) | -a\n\n");
 		printf("Options:\n");
-		printf("-h: Show this.\n\n");
+		printf("-h: Show this.\n");
 		printf("Examples:\n");
 		printf("# ./TCP-Syn-Port-Scanner lucho-alfie.ddns.net -h\n");
 		printf("sudo ./TCP-Syn-Port-Scanner lucho-alfie.ddns.net 500\n\n");
@@ -69,18 +69,19 @@ int main(int argc, char *argv[]){
 		show_error("Error opening Ports.txt", errno);
 		exit(EXIT_FAILURE);
 	}
-	portsToScan= (struct port *) malloc(sizeof(struct port)*cantPortsToScan);
+	portsToScan=(struct port *) malloc(sizeof(struct port)*cantPortsToScan);
 	for(int i=0;i<cantPortsToScan;i++){
 		fscanf(f,"%d,",&portsToScan[i].portNumber);
 		portsToScan[i].portStatus=PORT_FILTERED;
 		struct servent *service_resp = getservbyport(ntohs(portsToScan[i].portNumber), "tcp");
 		(service_resp==NULL)?(strcpy(portsToScan[i].ianaService,"???")):(strcpy(portsToScan[i].ianaService, service_resp->s_name));
 	}
+	fclose(f);
 	struct timespec tInit, tEnd;
 	clock_gettime(CLOCK_REALTIME, &tInit);
 	time_t timestamp = time(NULL);
 	struct tm tm = *localtime(&timestamp);
-	printf("\n\nStarting TCP Syn Port Scanning... (%d/%02d/%02d %02d:%02d:%02d UTC:%s)\n\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,tm.tm_zone);
+	printf("\nStarting TCP Syn Port Scanning... (%d/%02d/%02d %02d:%02d:%02d UTC:%s)\n\n",tm.tm_year + 1900, tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec,tm.tm_zone);
 	char *ip=NULL;
 	hostname_to_ip(target,&ip);
 	if(inet_addr(target)!=-1){
